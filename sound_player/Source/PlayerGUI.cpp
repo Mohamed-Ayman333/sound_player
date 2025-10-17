@@ -1,0 +1,107 @@
+﻿#include "PlayerGUI.h"
+
+
+using namespace juce;
+
+playerGUI::playerGUI() {
+    playerAudio P1;
+    //buttons
+    
+    loadButton.addListener(this);
+    addAndMakeVisible(loadButton);
+    restartButton.addListener(this);
+    addAndMakeVisible(restartButton);
+    stopButton.addListener(this);
+    addAndMakeVisible(stopButton);
+    mute.addListener(this);
+    addAndMakeVisible(mute);
+    pauseAndPlay.addListener(this);
+    addAndMakeVisible(pauseAndPlay);
+    goToStart.addListener(this);
+    addAndMakeVisible(goToStart);
+    goToEnd.addListener(this);
+    addAndMakeVisible(goToEnd);
+    
+
+    // Volume sliders
+    volume = 50;
+    volumeSlider.setRange(0, 100, 1);
+    volumeSlider.setValue(50);
+    volumeSlider.addListener(this);
+    addAndMakeVisible(volumeSlider);
+    setSize(1000, 1000);
+    
+   
+}
+//screen color
+void playerGUI::paint(juce::Graphics& g)
+{
+    g.fillAll(juce::Colours::darkgrey);
+}
+//button Size And Location
+void playerGUI::resized()
+{
+    
+    loadButton.setBounds(20, 20, 100, 40);
+    restartButton.setBounds(140, 20, 80, 40);
+    stopButton.setBounds(240, 20, 80, 40);
+    mute.setBounds(340, 20, 80, 40);
+    pauseAndPlay.setBounds(20, 140, 100, 40);
+    goToStart.setBounds(140, 140, 80, 40);
+    goToEnd.setBounds(240, 140, 80, 40);
+    /*prevButton.setBounds(340, y, 80, 40);
+    nextButton.setBounds(440, y, 80, 40);*/
+
+    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+}
+
+void playerGUI::buttonClicked(juce::Button* button)
+{
+    if (button == &loadButton)
+    {
+        P1.load_track();
+    }
+
+    if (button == &restartButton)
+    {
+        P1.transportSource.start();
+    }
+
+    if (button == &stopButton)
+    {
+        P1.transportSource.stop();
+        P1.transportSource.setPosition(0.0);
+    }
+    if (button == &mute) {
+        P1.mute(&volumeSlider, &volume);
+
+    }
+    if (button == &pauseAndPlay) {
+        //P1.
+
+    }
+    if (button == &goToStart) {
+        //P1.
+
+    }
+    if (button == &goToEnd) {
+        //P1.
+
+    }
+
+}
+
+void playerGUI::sliderValueChanged(Slider* slider)
+{
+    if (slider == &volumeSlider) {
+        P1.transportSource.setGain((float)slider->getValue());
+        if(slider->getValue() !=0)
+        {
+            volume = slider->getValue();
+        }
+    }
+}
+//void playerGUI::n(Slider s) {
+//    
+//}
+
