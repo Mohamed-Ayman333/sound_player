@@ -19,6 +19,7 @@ class playerGUI: public Button::Listener,
 	TextButton goToStart{ "go to start" };
 	TextButton goToEnd{ "go to end" };
 	
+	TextButton loop{ "loop" };
 public:
 	playerAudio P1;
 	playerGUI();

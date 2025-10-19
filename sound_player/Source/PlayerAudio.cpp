@@ -86,3 +86,13 @@ void playerAudio::stop() {
     transportSource.stop();
     transportSource.setPosition(0.0);
 }
+
+void playerAudio::loop() {
+    if (readerSource->isLooping()) {
+        readerSource->setLooping(false);
+    }
+    else
+    {
+        readerSource->setLooping(true);
+    }
+}

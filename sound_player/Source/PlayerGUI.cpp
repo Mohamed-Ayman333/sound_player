@@ -10,19 +10,27 @@ playerGUI::playerGUI() {
     
     loadButton.addListener(this);
     addAndMakeVisible(loadButton);
+
     restartButton.addListener(this);
     addAndMakeVisible(restartButton);
+
     stopButton.addListener(this);
     addAndMakeVisible(stopButton);
+
     mute.addListener(this);
     addAndMakeVisible(mute);
+
     pauseAndPlay.addListener(this);
     addAndMakeVisible(pauseAndPlay);
+
     goToStart.addListener(this);
     addAndMakeVisible(goToStart);
+
     goToEnd.addListener(this);
     addAndMakeVisible(goToEnd);
-    
+
+    loop.addListener(this);
+    addAndMakeVisible(loop);
 
     // Volume sliders
    
@@ -50,6 +58,7 @@ void playerGUI::resized()
     pauseAndPlay.setBounds(20, 140, 100, 40);
     goToStart.setBounds(140, 140, 80, 40);
     goToEnd.setBounds(240, 140, 80, 40);
+    loop.setBounds(340, 140, 80, 40);
     /*prevButton.setBounds(340, y, 80, 40);
     nextButton.setBounds(440, y, 80, 40);*/
 
@@ -91,7 +100,10 @@ void playerGUI::buttonClicked(juce::Button* button)
         //P1.
 
     }
+    if (button == &loop) {
+        P1.loop();
 
+    }
 }
 
 void playerGUI::sliderValueChanged(Slider* slider)

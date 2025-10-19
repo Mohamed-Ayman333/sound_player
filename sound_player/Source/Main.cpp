@@ -16,7 +16,7 @@ class SimpleAudioPlayer : public JUCEApplication
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true); // MainComponent = our UI + logic
-            centreWithSize(1000, 1000);
+            centreWithSize(1000, 500);
             setVisible(true);
         }
 
