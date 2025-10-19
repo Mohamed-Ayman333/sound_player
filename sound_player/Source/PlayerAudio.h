@@ -3,10 +3,12 @@
 using namespace juce;
 
 class playerAudio : public AudioAppComponent{
-
     
+   
 
 public:
+    int volume;
+    
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
@@ -16,6 +18,9 @@ public:
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)override;
     void releaseResources()override;
     void load_track();
-    void mute(Slider* slider, int* volume);
+    void mute(Slider* slider);
+    void setVolume(Slider* slider);
+    void restart();
+    void stop();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerAudio)
 };

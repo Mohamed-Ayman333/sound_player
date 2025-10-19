@@ -8,7 +8,7 @@ using namespace juce;
 class playerGUI: public Button::Listener,
 	public Slider::Listener,public Component{
 
-	int volume;
+	
 	TextButton loadButton{ "Load Files"};
 	TextButton restartButton{ "Restart" };
 	TextButton stopButton{ "Stop" };

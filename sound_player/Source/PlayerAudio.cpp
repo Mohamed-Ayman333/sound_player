@@ -18,6 +18,8 @@ void playerAudio::releaseResources()
 
 playerAudio::playerAudio() {
     formatManager.registerBasicFormats();
+    volume = 50;
+    
 }
 void playerAudio::load_track() {
     juce::FileChooser chooser("Select audio files...",
@@ -56,16 +58,31 @@ void playerAudio::load_track() {
             }
         });
 }
-void playerAudio::mute(Slider* slider,int* volume) {
-    if ((*slider).getValue()!=0)
-    {
-        
-        (*slider).setValue(0);
-       
+void playerAudio::setVolume(Slider* slider) {
+   
+    transportSource.setGain((float)slider->getValue());
+    
+    
+}
+void playerAudio::mute(Slider* slider) {
+    if (slider->getValue() == 0) {
+        transportSource.setGain(volume);
+        slider->setValue(volume);
     }
     else {
-        (*slider).setValue(*volume);
+        volume = slider->getValue();
+        slider->setValue(0);
+        setVolume(slider);
         
     }
+  
+}
+void playerAudio::restart() {
+    stop();
+    transportSource.start();
 }
 
+void playerAudio::stop() {
+    transportSource.stop();
+    transportSource.setPosition(0.0);
+}

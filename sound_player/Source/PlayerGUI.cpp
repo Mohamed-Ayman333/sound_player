@@ -5,6 +5,7 @@ using namespace juce;
 
 playerGUI::playerGUI() {
     playerAudio P1;
+    
     //buttons
     
     loadButton.addListener(this);
@@ -24,7 +25,7 @@ playerGUI::playerGUI() {
     
 
     // Volume sliders
-    volume = 50;
+   
     volumeSlider.setRange(0, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
@@ -64,16 +65,18 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     if (button == &restartButton)
     {
-        P1.transportSource.start();
+        //god for now
+        P1.restart();
+        
     }
 
     if (button == &stopButton)
     {
-        P1.transportSource.stop();
-        P1.transportSource.setPosition(0.0);
+        //to be edeted
+        P1.stop();
     }
     if (button == &mute) {
-        P1.mute(&volumeSlider, &volume);
+        P1.mute(&volumeSlider);
 
     }
     if (button == &pauseAndPlay) {
@@ -94,14 +97,6 @@ void playerGUI::buttonClicked(juce::Button* button)
 void playerGUI::sliderValueChanged(Slider* slider)
 {
     if (slider == &volumeSlider) {
-        P1.transportSource.setGain((float)slider->getValue());
-        if(slider->getValue() !=0)
-        {
-            volume = slider->getValue();
-        }
+        P1.setVolume(slider);
     }
 }
-//void playerGUI::n(Slider s) {
-//    
-//}
-
