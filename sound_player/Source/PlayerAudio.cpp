@@ -94,3 +94,17 @@ void playerAudio::loop() {
         readerSource->setLooping(true);
     }
 }
+void playerAudio::pauseAndPlay() {
+    if (transportSource.isPlaying()) {
+        transportSource.stop();
+    }
+    else {
+        transportSource.start();
+    }
+}
+void playerAudio::goToStart() {
+    transportSource.setPosition(0);
+}
+void playerAudio::goToEnd() {
+    transportSource.setPosition(transportSource.getTotalLength());
+}

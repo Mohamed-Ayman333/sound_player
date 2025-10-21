@@ -89,15 +89,15 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     }
     if (button == &pauseAndPlay) {
-       
+        P1.pauseAndPlay();
 
     }
     if (button == &goToStart) {
-        
+        P1.goToStart();    
 
     }
     if (button == &goToEnd) {
-       
+        P1.goToEnd();
 
     }
     if (button == &loop) {
