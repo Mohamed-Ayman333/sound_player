@@ -24,6 +24,6 @@ public:
     void restart();
     void stop();
     void loop();
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerAudio)
 };
