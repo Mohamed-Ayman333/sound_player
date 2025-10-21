@@ -14,12 +14,11 @@ class playerGUI: public Button::Listener,
 	TextButton stopButton{ "Stop" };
 	Slider volumeSlider;
 	TextButton mute{"mute"};
-
 	TextButton pauseAndPlay{ "pauseAndPlay" };
 	TextButton goToStart{ "go to start" };
 	TextButton goToEnd{ "go to end" };
-	
 	TextButton loop{ "loop" };
+
 public:
 	playerAudio P1;
 	playerGUI();

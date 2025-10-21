@@ -30,14 +30,7 @@ public:
     void sliderValueChanged(juce::Slider* slider) override;
 
 private:
-    // Audio
-    
-
-    // GUI Controls
    
-
-    //void loadTrack(const juce::File& file);
-    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

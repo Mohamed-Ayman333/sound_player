@@ -9,6 +9,7 @@ class playerAudio : public AudioAppComponent{
 public:
     int volume;
     
+    
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
@@ -23,5 +24,6 @@ public:
     void restart();
     void stop();
     void loop();
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerAudio)
 };
