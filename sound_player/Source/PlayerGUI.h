@@ -21,7 +21,7 @@ class playerGUI: public Button::Listener,
 
 public:
 	playerAudio P1;
-	//playerGUI();
+	playerGUI();
 	//screen color
 	void paint(juce::Graphics& g) override;
 	//button Size And Location
@@ -29,5 +29,7 @@ public:
 
 	void buttonClicked(juce::Button* button) override;
 	void sliderValueChanged(juce::Slider* slider) override;
-	/*void n(Slider s);*/
+	
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerGUI)
+
 };

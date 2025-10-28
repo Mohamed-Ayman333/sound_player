@@ -21,9 +21,7 @@ public:
 
     // GUI
     //screen color
-    void paint(juce::Graphics& g) override;
-    //button Size And Location
-    void resized() override;
+    
 
     // Event handlers
     void buttonClicked(juce::Button* button) override;

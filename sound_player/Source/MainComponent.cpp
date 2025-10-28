@@ -5,6 +5,7 @@ MainComponent::MainComponent()
 {
     
     addAndMakeVisible(g1);
+    
 
     setAudioChannels(0, 2);
     
@@ -30,15 +31,7 @@ void MainComponent::releaseResources()
     g1.P1.transportSource.releaseResources();
 }
 //screen color
-void MainComponent::paint(juce::Graphics& g)
-{
-    g1.paint(g);
-}
-//button Size And Location
-void MainComponent::resized()
-{
-    g1.resized();
-}
+
 
 void MainComponent::buttonClicked(juce::Button* button)
 {
