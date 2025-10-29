@@ -1,5 +1,11 @@
 #include "PlayerAudio.h"
 
+#include <algorithm>
+
+playerAudio::playerAudio() {
+    formatManager.registerBasicFormats();
+    volume = 50;
+}
 
 void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
@@ -9,6 +15,7 @@ void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 void playerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     transportSource.getNextAudioBlock(bufferToFill);
+    
 }
 
 void playerAudio::releaseResources()
@@ -16,16 +23,8 @@ void playerAudio::releaseResources()
     transportSource.releaseResources();
 }
 
-playerAudio::playerAudio() {
-    formatManager.registerBasicFormats();
-    volume = 50;
-    
-}
-void playerAudio::load_track() {
-    juce::FileChooser chooser("Select audio files...",
-        juce::File{},
-        "*.wav;*.mp3");
-
+void playerAudio::load_track(std::function<void()> onComplete)
+{
     fileChooser = std::make_unique<juce::FileChooser>(
         "Select an audio file...",
         juce::File{},
@@ -33,7 +32,7 @@ void playerAudio::load_track() {
 
     fileChooser->launchAsync(
         juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
-        [this](const juce::FileChooser& fc)
+        [this, onComplete](const juce::FileChooser& fc)
         {
             auto file = fc.getResult();
             if (file.existsAsFile())
@@ -54,10 +53,19 @@ void playerAudio::load_track() {
                         nullptr,
                         reader->sampleRate);
                     transportSource.start();
+
+                    
+                        thumbnail.clear();
+                    
+                    thumbnail.setSource(new juce::FileInputSource(file));
+                    
+                    if (onComplete)
+                        juce::MessageManager::callAsync(onComplete);
                 }
             }
         });
 }
+
 void playerAudio::setVolume(Slider* slider) {
    
     transportSource.setGain((float)slider->getValue());
@@ -107,4 +115,10 @@ void playerAudio::goToStart() {
 }
 void playerAudio::goToEnd() {
     transportSource.setPosition(transportSource.getTotalLength());
+}
+void playerAudio::forward() {
+    transportSource.setPosition(std::min(transportSource.getCurrentPosition() + 10.0, transportSource.getLengthInSeconds()));
+}
+void playerAudio::backward() {
+    transportSource.setPosition(std::max(transportSource.getCurrentPosition() - 10.0,0.0));
 }

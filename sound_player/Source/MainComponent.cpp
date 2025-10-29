@@ -19,11 +19,13 @@ MainComponent::~MainComponent()
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
    g1.P1.prepareToPlay(samplesPerBlockExpected, sampleRate);
+   
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    g1.P1.transportSource.getNextAudioBlock(bufferToFill);
+    g1.P1.getNextAudioBlock(bufferToFill);
+    
 }
 
 void MainComponent::releaseResources()

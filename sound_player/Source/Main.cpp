@@ -12,11 +12,11 @@ class SimpleAudioPlayer : public JUCEApplication
     {
     public:
         MainWindow(String name)
-            : DocumentWindow(name, Colours::red, DocumentWindow::allButtons)
+            : DocumentWindow(name, Colours::black, DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true); // MainComponent = our UI + logic
-            centreWithSize(1000, 500);
+            centreWithSize(1000, 700);
             setVisible(true);
         }
 
