@@ -5,17 +5,35 @@
 
 using namespace juce;
 
+class marker:public Component {
+
+
+	public:
+	double position; 
+	
+	marker(double pos);
+
+	void paint(Graphics& g) override;
+};
+
 class waver : public Component, public ChangeListener
 {
 public:
     playerAudio* pPtr;
     Rectangle<int> r;
+	
 
     waver(playerAudio* P1);
-    waver(int x, int y, int width, int height, playerAudio& P1);
+    
     ~waver() override;
 
     void paint(Graphics& g) override;
+
+    
+    void mouseDown(const MouseEvent& event) override;
+    void mouseDrag(const MouseEvent& event) override;
+	
+
     void changeListenerCallback(ChangeBroadcaster* source) override;
 };
 
@@ -25,6 +43,7 @@ class playerGUI: public Button::Listener,
 	
 
 	Slider volumeSlider;
+	//Slider positionSlider;
 	
 	TextButton loadButton{ "Load Files"};
 	TextButton restartButton{ "Restart" };
@@ -36,8 +55,8 @@ class playerGUI: public Button::Listener,
 	TextButton loop{ "loop" };
 	TextButton forward{ "10s forward" };
 	TextButton backward{ "10s backward" };
-	//Graphics gr{};
 	
+
 	
 
 public:
@@ -45,10 +64,10 @@ public:
 	
 	playerAudio P1;
 	waver wave{ &P1 };
-	
+	marker posetion_marke{ 0.0 };
 	playerGUI();
 	
-	//AudioVisualiserComponent();
+	
 
 	//screen color
 	void paint(juce::Graphics& g) override;

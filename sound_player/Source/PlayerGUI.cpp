@@ -3,6 +3,50 @@
 
 using namespace juce;
 
+marker::marker(double pos) {
+
+	position = pos;
+}
+void marker::paint(Graphics& g) {
+    g.fillAll(juce::Colours::red);
+}
+
+
+waver::waver(playerAudio* P1) {
+
+    pPtr = P1;
+    if (pPtr)
+        pPtr->thumbnail.addChangeListener(this);
+
+};
+
+waver::~waver()
+{
+    if (pPtr)
+        pPtr->thumbnail.removeChangeListener(this);
+}
+
+void waver::changeListenerCallback(ChangeBroadcaster* source)
+{
+
+    MessageManager::callAsync([this] { repaint(); });
+}
+
+void waver::paint(Graphics& g) {
+    g.fillAll(juce::Colours::grey);
+    g.setColour(juce::Colours::orange);
+
+    if (pPtr != nullptr && pPtr->thumbnail.getNumChannels() > 0)
+    {
+        r = getLocalBounds();
+        // draw the full duration from 0 to thumbnail total length
+        const double totalLength = pPtr->thumbnail.getTotalLength();
+        pPtr->thumbnail.drawChannels(g, r, 0.0, totalLength > 0.0 ? totalLength : 1.0, 0.8);
+    }
+
+
+}
+
 playerGUI::playerGUI(){
     
    
@@ -38,51 +82,25 @@ playerGUI::playerGUI(){
     backward.addListener(this);
     addAndMakeVisible(backward);
 
-    // Volume sliders
+    // sliders
    
     volumeSlider.setRange(0, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
     addAndMakeVisible(volumeSlider);
     setSize(1000, 1000);
+
+    
+    
     //wave
+
+    wave.addAndMakeVisible(&posetion_marke);
+	
     addAndMakeVisible(wave);
     
    
 }
-waver::waver(playerAudio* P1) {
 
-    pPtr = P1;
-    if (pPtr)
-        pPtr->thumbnail.addChangeListener(this); 
-};
-
-waver::~waver()
-{
-    if (pPtr)
-        pPtr->thumbnail.removeChangeListener(this);
-}
-
-void waver::changeListenerCallback(ChangeBroadcaster* source)
-{
-    
-    MessageManager::callAsync([this] { repaint(); });
-}
-
-void waver::paint(Graphics& g) {
-    g.fillAll(juce::Colours::grey);
-    g.setColour(juce::Colours::orange);
-
-    if (pPtr != nullptr && pPtr->thumbnail.getNumChannels() > 0)
-    {
-        r = getLocalBounds();
-        // draw the full duration from 0 to thumbnail total length
-        const double totalLength = pPtr->thumbnail.getTotalLength();
-        pPtr->thumbnail.drawChannels(g, r, 0.0, totalLength > 0.0 ? totalLength : 1.0, 0.8);
-    }
-    
-
-}
 //screen color
 void playerGUI::paint(Graphics& g)
 {
@@ -111,7 +129,10 @@ void playerGUI::resized()
     
 
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+    
+
     wave.setBounds(20, 340, getWidth() - 40, 60);
+	posetion_marke.setBounds(0, 0, 1, wave.getHeight());
     
 }
 
@@ -170,6 +191,65 @@ void playerGUI::sliderValueChanged(Slider* slider)
     if (slider == &volumeSlider) {
         P1.setVolume(slider);
     }
+}
+
+void waver::mouseDown(const MouseEvent& event)
+{
+    if (pPtr == nullptr)
+        return;
+
+    const int w = getWidth();
+    if (w <= 0)
+        return;
+
+    const double total = pPtr->thumbnail.getTotalLength();
+    if (total <= 0.0)
+        return;
+
+    const int x = jlimit(0, w - 1, event.getPosition().x);
+    const double newPositionSeconds = (double) x / (double) w * total;
+
+    pPtr->transportSource.setPosition(newPositionSeconds);
+    
+    
+    if (auto* parentGui = dynamic_cast<playerGUI*>(getParentComponent()))
+    {
+       
+        parentGui->posetion_marke.setBounds(x - 2, 0, 5, getHeight());
+        parentGui->posetion_marke.repaint();
+    }
+
+    repaint();
+}
+
+void waver::mouseDrag(const MouseEvent& event)
+{
+    // Support scrubbing while dragging
+    if (pPtr == nullptr)
+        return;
+
+    const int w = getWidth();
+    if (w <= 0)
+        return;
+
+    const double total = pPtr->thumbnail.getTotalLength();
+    if (total <= 0.0)
+        return;
+
+    int x = event.getPosition().x;
+    x = jlimit(0, w - 1, x);
+    const double newPositionSeconds = (double) x / (double) w * total;
+
+    pPtr->transportSource.setPosition(newPositionSeconds);
+    pPtr->transportSource.start();
+
+    if (auto* parentGui = dynamic_cast<playerGUI*>(getParentComponent()))
+    {
+
+        parentGui->posetion_marke.setBounds(x - 2, 0, 5, getHeight());
+        parentGui->posetion_marke.repaint();
+    }
+    repaint();
 }
 
 
