@@ -2,9 +2,23 @@
 
 #include <JuceHeader.h>
 #include "PlayerAudio.h"
+#include <vector>
 
 using namespace juce;
+class waver;
+class listModel :public ListBoxModel {
 
+	public:
+	playerAudio* pPtr;
+	std::vector<String> items;
+	
+	listModel(playerAudio* P1);
+	int getNumRows() override;
+	void paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected) override;
+	void listBoxItemClicked(int row, const juce::MouseEvent& e) override;
+	void menu_action(int option, int row);
+
+};
 class marker:public Component {
 
 
@@ -14,6 +28,8 @@ class marker:public Component {
 	marker(double pos);
 
 	void paint(Graphics& g) override;
+	void mouseDown(const MouseEvent& event);
+	void menu_action(int option,waver* parentWaver);
 };
 
 class waver : public Component, public ChangeListener
@@ -21,7 +37,9 @@ class waver : public Component, public ChangeListener
 public:
     playerAudio* pPtr;
     Rectangle<int> r;
-	
+	marker posetion_marke{ 0.0 };
+	std::vector<std::unique_ptr<marker>> markers;
+	marker looping_marker[2]{ marker(0.0),marker(0.0) };
 
     waver(playerAudio* P1);
     
@@ -38,12 +56,13 @@ public:
 };
 
 class playerGUI: public Button::Listener,
-	public Slider::Listener,public Component {
+	public Slider::Listener,public Component,public Timer,public ChangeListener {
 
 	
 
 	Slider volumeSlider;
-	//Slider positionSlider;
+	Slider positionSlider;
+	
 	
 	TextButton loadButton{ "Load Files"};
 	TextButton restartButton{ "Restart" };
@@ -55,8 +74,18 @@ class playerGUI: public Button::Listener,
 	TextButton loop{ "loop" };
 	TextButton forward{ "10s forward" };
 	TextButton backward{ "10s backward" };
+	TextButton playlists{ "playlists" };
+	TextButton make_a_playlist { "make a playlist" };
+	TextButton add_to_playlist { "add to playlist" };
+	
+	listModel playlist_model{&P1};
+	ListBox play_list;
 	
 
+	Label file_data;
+	
+	
+	
 	
 
 public:
@@ -64,19 +93,22 @@ public:
 	
 	playerAudio P1;
 	waver wave{ &P1 };
-	marker posetion_marke{ 0.0 };
+	marker*  posetion_marke_ptr = &wave.posetion_marke;
+	bool markerLoopEnabled{ false };
+
 	playerGUI();
 	
 	
 
 	//screen color
-	void paint(juce::Graphics& g) override;
+	void paint(Graphics& g) override;
 	//button Size And Location
 	void resized() override;
 
 	void buttonClicked(juce::Button* button) override;
 	void sliderValueChanged(juce::Slider* slider) override;
-	
+	void timerCallback();
+	void changeListenerCallback(juce::ChangeBroadcaster* source);
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerGUI)

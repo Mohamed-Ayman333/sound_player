@@ -32,7 +32,7 @@ void MainComponent::releaseResources()
 {
     g1.P1.transportSource.releaseResources();
 }
-//screen color
+
 
 
 void MainComponent::buttonClicked(juce::Button* button)
