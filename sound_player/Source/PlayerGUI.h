@@ -79,6 +79,8 @@ public:
 	TextButton playlists{ "playlists" };
 	TextButton make_a_playlist { "make a playlist" };
 	TextButton add_to_playlist { "add to playlist" };
+	TextButton next { "next track" };
+	TextButton back { "last track" };
 	
 	listModel playlist_model{&P1,this};
 	ListBox play_list;
@@ -97,6 +99,8 @@ public:
 	waver wave{ &P1 };
 	marker*  posetion_marke_ptr = &wave.posetion_marke;
 	bool markerLoopEnabled{ false };
+	bool wasPlayingLastTick = false;
+
 
 	playerGUI();
 	
@@ -111,6 +115,8 @@ public:
 	void sliderValueChanged(juce::Slider* slider) override;
 	void timerCallback();
 	void changeListenerCallback(juce::ChangeBroadcaster* source);
+	
+	void menu_action(int result, playerGUI* gui);
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerGUI)

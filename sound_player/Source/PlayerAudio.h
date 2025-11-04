@@ -27,6 +27,7 @@ public:
     /*std::vector<std::vector<File>>playlists;*/
     std::vector<File>playlist;
 	int playlist_index = 0;
+    bool loopPlaylist = false;
 
     
     
@@ -48,6 +49,10 @@ public:
 	void make_a_playlist();
 	void add_to_playlist();
     void load_track_from_file(int row);
+    
+    void playNextInPlaylist();
+    void playPreviasInPlaylist();
+
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerAudio)

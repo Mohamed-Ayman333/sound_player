@@ -271,3 +271,35 @@ void playerAudio::load_track_from_file(int row) {
         }
     }
 }
+void playerAudio::playNextInPlaylist()
+{
+    if (playlist.empty())
+        return;
+
+    
+    playlist_index++;
+    if (playlist_index >= static_cast<int>(playlist.size()))
+    {
+        if (loopPlaylist)
+            playlist_index = 0;
+        else
+            return;
+    }
+
+    load_track_from_file(playlist_index);
+}
+void playerAudio::playPreviasInPlaylist()
+{
+    if (playlist.empty())
+        return;
+    
+    playlist_index--;
+    if (playlist_index < 0)
+    {
+        if (loopPlaylist)
+            playlist_index = static_cast<int>(playlist.size()) - 1;
+        else
+            return;
+    }
+    load_track_from_file(playlist_index);
+}

@@ -44,13 +44,22 @@ playerGUI::playerGUI(){
 
     backward.addListener(this);
     addAndMakeVisible(backward);
+
     playlists.addListener(this);
     addAndMakeVisible(playlists);
 
     make_a_playlist.addListener(this);
     addAndMakeVisible(make_a_playlist);
+
     add_to_playlist.addListener(this);
     addAndMakeVisible(add_to_playlist);
+
+    back.addListener(this);
+    addAndMakeVisible(back);
+
+    next.addListener(this);
+    addAndMakeVisible(next);
+
     
 
     // sliders
@@ -115,6 +124,8 @@ void playerGUI::resized()
     playlists.setBounds(240, 300, 80, 40);
 	make_a_playlist.setBounds(340, 300, 80, 40);
     add_to_playlist.setBounds(440, 300, 80, 40);
+    back.setBounds(540, 300, 80, 40);
+    next.setBounds(640, 300, 80, 40);
     //sliders
     volumeSlider.setBounds(20, 140, getWidth() - 40, 30);
     positionSlider.setBounds(20, 480, getWidth() - 40, 30);
@@ -208,7 +219,21 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &loop) {
         
-		markerLoopEnabled = !markerLoopEnabled;
+		PopupMenu loop_menu;
+		loop_menu.addItem(1, "loop on song");
+		loop_menu.addItem(2, "loop betwean markers");
+		loop_menu.addItem(3, "loop on playlist");
+		loop_menu.addItem(4, "stop looping");
+        loop_menu.showMenuAsync(juce::PopupMenu::Options(),
+            [this](int result)
+            {
+
+                this->menu_action(result,this);
+            });
+
+
+		
+
     }
     if (button == &forward) {
         P1.forward();
@@ -242,6 +267,14 @@ void playerGUI::buttonClicked(juce::Button* button)
 		play_list.updateContent();
 
     }
+    if (button == &back) {
+        
+		P1.playPreviasInPlaylist();
+    }
+    if (button == &next) {
+        
+        P1.playNextInPlaylist();
+    }
 
 }
 
@@ -255,9 +288,7 @@ void playerGUI::sliderValueChanged(Slider* slider)
     }
 }
 
-void playerGUI::timerCallback()
-{
-    
+void playerGUI::timerCallback() {
     positionSlider.setValue(P1.transportSource.getCurrentPosition(), dontSendNotification);
 
     const int w = wave.getWidth();
@@ -271,28 +302,51 @@ void playerGUI::timerCallback()
         posetion_marke_ptr->repaint();
     }
 
+
+    bool isPlayingNow = P1.transportSource.isPlaying();
+    double currentPos = P1.transportSource.getCurrentPosition();
+    double totalLen = P1.transportSource.getLengthInSeconds();
+
+    if (wasPlayingLastTick && !isPlayingNow && totalLen > 0.0)
+    {
+
+        if (currentPos < 0.2 || currentPos >= totalLen - 0.2)
+        {
+            P1.playNextInPlaylist();
+
+            if (P1.reader)
+            {
+                const double len = P1.transportSource.getLengthInSeconds();
+                positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
+                positionSlider.setValue(0.0);
+                wave.looping_marker[0].position = 0.0;
+                wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
+                wave.markers.clear();
+                wave.repaint();
+                file_data.setText(P1.meta, NotificationType::dontSendNotification);
+            }
+        }
+    }
+
+    wasPlayingLastTick = isPlayingNow;
+
     if (!markerLoopEnabled)
         return;
 
     const double pos = P1.transportSource.getCurrentPosition();
     const double loopStart = wave.looping_marker[0].position;
-    const double loopEnd   = wave.looping_marker[1].position;
+    const double loopEnd = wave.looping_marker[1].position;
 
-    
     const double eps = 1e-6;
     if (loopEnd > loopStart + eps && pos >= loopEnd - eps)
     {
-       
         P1.transportSource.setPosition(loopStart);
         P1.transportSource.start();
-        
     }
     if (loopEnd > loopStart + eps && pos <= loopStart - eps)
     {
-
         P1.transportSource.setPosition(loopStart);
         P1.transportSource.start();
-
     }
 }
 
@@ -303,6 +357,29 @@ void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source) {
 		
         play_list.repaintRow(0);
     }
+}
+
+void playerGUI::menu_action(int result, playerGUI* gui) {
+
+    if (result == 1) {
+        gui->P1.readerSource->setLooping(true);
+        gui->markerLoopEnabled = false;
+        
+    }
+    if (result == 2) {
+        gui->P1.readerSource->setLooping(false);
+        gui->markerLoopEnabled = true;
+        
+    }
+    if (result == 3) {
+        gui->P1.loopPlaylist = true;
+        
+    }
+    if (result == 4) {
+		gui->P1.readerSource->setLooping(false);
+        gui->markerLoopEnabled = false;
+        gui->P1.loopPlaylist = false;
+	}
 }
 
 waver::waver(playerAudio* P1) {
@@ -554,33 +631,34 @@ void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
             pPtr->transportSource.setPosition(0.0);
             pPtr->load_track_from_file(row);
             pPtr->transportSource.start();
-            
-		}
-        guiptr->wave.repaint();
-
-        const double len = pPtr->transportSource.getLengthInSeconds();
-        guiptr->positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
-        guiptr->positionSlider.setValue(0.0);
-
-        guiptr->wave.looping_marker[0].position = 0.0;
-        guiptr->wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
 
 
-        if (pPtr->reader && pPtr->meta.isEmpty())
-        {
-            pPtr->meta.clear();
-            auto& metadata = pPtr->reader->metadataValues;
-            auto keys = metadata.getAllKeys();
-            auto vals = metadata.getAllValues();
+            guiptr->wave.repaint();
+
+            const double len = pPtr->transportSource.getLengthInSeconds();
+            guiptr->positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
+            guiptr->positionSlider.setValue(0.0);
+
+            guiptr->wave.looping_marker[0].position = 0.0;
+            guiptr->wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
 
 
-            pPtr->meta += "Name : " + vals[1] + " Artest : " + vals[0];
+            if (pPtr->reader && pPtr->meta.isEmpty())
+            {
+                pPtr->meta.clear();
+                auto& metadata = pPtr->reader->metadataValues;
+                auto keys = metadata.getAllKeys();
+                auto vals = metadata.getAllValues();
 
+
+                pPtr->meta += "Name : " + vals[1] + " Artest : " + vals[0];
+
+            }
+
+
+            guiptr->file_data.setText(pPtr->meta, NotificationType::dontSendNotification);
+            guiptr->file_data.repaint();
         }
-
-
-        guiptr->file_data.setText(pPtr->meta, NotificationType::dontSendNotification);
-        guiptr->file_data.repaint();
     }
     if (e.mods.isRightButtonDown()) {
         PopupMenu menu;
@@ -608,3 +686,4 @@ void listModel::menu_action(int option, int row)
         items.erase(it);
     }
 }
+
