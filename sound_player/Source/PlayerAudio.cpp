@@ -202,3 +202,72 @@ void playerAudio::add_to_playlist() {
             sendChangeMessage();
         });
 }
+void playerAudio::load_track_from_file(int row) {
+    if (row < 0 || row >= static_cast<int>(playlist.size()))
+        return;
+    playlist_index = row;
+    File file = playlist[row];
+    if (file.existsAsFile())
+    {
+        if (auto* rawReader = formatManager.createReaderFor(file))
+        {
+            // stop and clear old sources
+            transportSource.stop();
+            transportSource.setSource(nullptr);
+            readerSource.reset();
+
+            reader.reset(rawReader);
+
+            {
+
+
+
+
+                const std::string pathUtf8 = file.getFullPathName().toStdString();
+                TagLib::FileRef f(pathUtf8.c_str());
+
+
+                if (!f.isNull() && f.tag())
+                {
+                    meta.clear();
+
+                    TagLib::Tag* t = f.tag();
+
+
+                    if (t->title().length())   meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                    if (t->artist().length())  meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                    if (t->album().length())   meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                    if (t->year())             meta += "Year: " + String((int)t->year()) + "  ";
+                    if (t->comment().length()) meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                    if (t->genre().length())   meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+
+                }
+                else
+                {
+                    meta = "No metadata found (try an MP3 with ID3 tags).";
+                }
+
+                String name = file.getFileName();
+
+                if (name.contains(".wav")) {
+                    meta.clear();
+                }
+
+
+            }
+
+
+
+            readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader.get(), false);
+
+            // attach readerSource
+            transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
+            transportSource.start();
+
+            thumbnail.clear();
+            thumbnail.setSource(new juce::FileInputSource(file));
+            sendChangeMessage();
+
+        }
+    }
+}

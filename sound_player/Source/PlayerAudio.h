@@ -26,6 +26,7 @@ public:
     String meta = "";
     /*std::vector<std::vector<File>>playlists;*/
     std::vector<File>playlist;
+	int playlist_index = 0;
 
     
     
@@ -46,6 +47,7 @@ public:
     void setPosition(Slider* slider);
 	void make_a_playlist();
 	void add_to_playlist();
+    void load_track_from_file(int row);
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerAudio)

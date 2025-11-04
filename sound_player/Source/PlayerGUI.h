@@ -6,13 +6,15 @@
 
 using namespace juce;
 class waver;
+class playerGUI;
 class listModel :public ListBoxModel {
 
 	public:
 	playerAudio* pPtr;
 	std::vector<String> items;
+	playerGUI* guiptr;
 	
-	listModel(playerAudio* P1);
+	listModel(playerAudio* P1,playerGUI*gui);
 	int getNumRows() override;
 	void paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected) override;
 	void listBoxItemClicked(int row, const juce::MouseEvent& e) override;
@@ -59,7 +61,7 @@ class playerGUI: public Button::Listener,
 	public Slider::Listener,public Component,public Timer,public ChangeListener {
 
 	
-
+public:
 	Slider volumeSlider;
 	Slider positionSlider;
 	
@@ -78,7 +80,7 @@ class playerGUI: public Button::Listener,
 	TextButton make_a_playlist { "make a playlist" };
 	TextButton add_to_playlist { "add to playlist" };
 	
-	listModel playlist_model{&P1};
+	listModel playlist_model{&P1,this};
 	ListBox play_list;
 	
 
@@ -88,7 +90,7 @@ class playerGUI: public Button::Listener,
 	
 	
 
-public:
+
 	
 	
 	playerAudio P1;

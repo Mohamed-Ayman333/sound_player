@@ -514,8 +514,9 @@ void marker::menu_action(int option, waver* parentWaver)
     }
 }
 
-listModel::listModel(playerAudio* P1) {
+listModel::listModel(playerAudio* P1,playerGUI*gui) {
     pPtr = P1;
+    guiptr = gui;
 }
 
 int listModel::getNumRows() {
@@ -546,11 +547,46 @@ void listModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int heig
 }
 
 void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
+    if(row < 0 || row >= getNumRows())
+		return;
+    if (e.mods.isLeftButtonDown()) {
+        if (pPtr) {
+            pPtr->transportSource.setPosition(0.0);
+            pPtr->load_track_from_file(row);
+            pPtr->transportSource.start();
+            
+		}
+        guiptr->wave.repaint();
+
+        const double len = pPtr->transportSource.getLengthInSeconds();
+        guiptr->positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
+        guiptr->positionSlider.setValue(0.0);
+
+        guiptr->wave.looping_marker[0].position = 0.0;
+        guiptr->wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
+
+
+        if (pPtr->reader && pPtr->meta.isEmpty())
+        {
+            pPtr->meta.clear();
+            auto& metadata = pPtr->reader->metadataValues;
+            auto keys = metadata.getAllKeys();
+            auto vals = metadata.getAllValues();
+
+
+            pPtr->meta += "Name : " + vals[1] + " Artest : " + vals[0];
+
+        }
+
+
+        guiptr->file_data.setText(pPtr->meta, NotificationType::dontSendNotification);
+        guiptr->file_data.repaint();
+    }
     if (e.mods.isRightButtonDown()) {
         PopupMenu menu;
         menu.addSeparator();
-        menu.addItem(1, "Load Playlist");
-        menu.addItem(2, "Delete Playlist");
+        menu.addItem(1, "play from here");
+        menu.addItem(2, "Delete item");
         menu.showMenuAsync(juce::PopupMenu::Options(),
             [this, row](int result)
             {
