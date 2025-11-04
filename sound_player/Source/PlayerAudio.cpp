@@ -215,7 +215,6 @@ void playerAudio::load_track_from_file(int row) {
             transportSource.stop();
             transportSource.setSource(nullptr);
             readerSource.reset();
-
             reader.reset(rawReader);
 
             {

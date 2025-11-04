@@ -319,10 +319,11 @@ void playerGUI::timerCallback() {
                 const double len = P1.transportSource.getLengthInSeconds();
                 positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
                 positionSlider.setValue(0.0);
+                wave.markers.clear();
                 wave.looping_marker[0].position = 0.0;
                 wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
-                wave.markers.clear();
-                wave.repaint();
+				wave.repaint();
+                
                 file_data.setText(P1.meta, NotificationType::dontSendNotification);
             }
         }
@@ -485,10 +486,25 @@ void waver::mouseDrag(const MouseEvent& event)
     repaint();
 }
 
+
 void waver::changeListenerCallback(ChangeBroadcaster* source)
 {
+    MessageManager::callAsync([this] {
 
-    MessageManager::callAsync([this] { repaint(); });
+        if (pPtr && pPtr->reader)
+        {
+            const double len = pPtr->transportSource.getLengthInSeconds();
+
+           
+            if (looping_marker[1].position == 0.0 || looping_marker[1].position == pPtr->transportSource.getLengthInSeconds())
+            {
+                looping_marker[0].position = 0.0;
+                looping_marker[1].position = len > 0.0 ? len : 1.0;
+            }
+        }
+
+        repaint();
+        });
 }
 
 waver::~waver()
@@ -499,7 +515,7 @@ waver::~waver()
 
 marker::marker(double pos) {
 
-	position = pos;
+    position = pos;
 }
 
 void marker::paint(Graphics& g) {
@@ -633,14 +649,13 @@ void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
             pPtr->transportSource.start();
 
 
-            guiptr->wave.repaint();
+            
 
             const double len = pPtr->transportSource.getLengthInSeconds();
             guiptr->positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
             guiptr->positionSlider.setValue(0.0);
 
-            guiptr->wave.looping_marker[0].position = 0.0;
-            guiptr->wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
+            
 
 
             if (pPtr->reader && pPtr->meta.isEmpty())
