@@ -1,9 +1,15 @@
 #include "PlayerAudio.h"
 #include <algorithm>
+#include <string>
+#include <fileref.h>
+#include <tag.h>
+
+using namespace juce;
 
 playerAudio::playerAudio() {
     formatManager.registerBasicFormats();
     volume = 50;
+
 }
 
 void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -14,7 +20,6 @@ void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 void playerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     transportSource.getNextAudioBlock(bufferToFill);
-    
 }
 
 void playerAudio::releaseResources()
@@ -36,28 +41,65 @@ void playerAudio::load_track(std::function<void()> onComplete)
             auto file = fc.getResult();
             if (file.existsAsFile())
             {
-                if (auto* reader = formatManager.createReaderFor(file))
+                if (auto* rawReader = formatManager.createReaderFor(file))
                 {
-                    // ?? Disconnect old source first
+                    // stop and clear old sources
                     transportSource.stop();
                     transportSource.setSource(nullptr);
                     readerSource.reset();
 
-                    // Create new reader source
-                    readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+                    
+                    reader.reset(rawReader);
 
-                    // Attach safely
-                    transportSource.setSource(readerSource.get(),
-                        0,
-                        nullptr,
-                        reader->sampleRate);
+                    {
+                        
+
+
+                        
+                        const std::string pathUtf8 = file.getFullPathName().toStdString();
+                        TagLib::FileRef f (pathUtf8.c_str());
+
+                        
+                        if (! f.isNull() && f.tag())
+                        {
+                            meta.clear();
+
+                            TagLib::Tag *t = f.tag();
+                          
+                            
+                                if (t->title().length())   meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                                if (t->artist().length())  meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                                if (t->album().length())   meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                                if (t->year())             meta += "Year: " + String((int)t->year()) + "  ";
+                                if (t->comment().length()) meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                                if (t->genre().length())   meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+                            
+                        }
+                        else
+                        {
+                            meta = "No metadata found (try an MP3 with ID3 tags).";
+                        }
+                        
+                        String name = file.getFileName();
+
+                        if (name.contains(".wav")) {
+                            meta.clear();
+                        }
+
+                        
+                    }
+                    
+
+                   
+                    readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader.get(), false);
+
+                    // attach readerSource
+                    transportSource.setSource(readerSource.get(),0,nullptr,reader->sampleRate);
                     transportSource.start();
 
-                    
-                        thumbnail.clear();
-                    
+                    thumbnail.clear();
                     thumbnail.setSource(new juce::FileInputSource(file));
-                    
+
                     if (onComplete)
                         juce::MessageManager::callAsync(onComplete);
                 }
@@ -92,15 +134,7 @@ void playerAudio::stop() {
     transportSource.stop();
     transportSource.setPosition(0.0);
 }
-void playerAudio::loop() {
-    if (readerSource->isLooping()) {
-        readerSource->setLooping(false);
-    }
-    else
-    {
-        readerSource->setLooping(true);
-    }
-}
+
 void playerAudio::pauseAndPlay() {
     if (transportSource.isPlaying()) {
         transportSource.stop();
@@ -120,4 +154,33 @@ void playerAudio::forward() {
 }
 void playerAudio::backward() {
     transportSource.setPosition(std::max(transportSource.getCurrentPosition() - 10.0,0.0));
+}
+void playerAudio::setPosition(Slider* slider) {
+    transportSource.setPosition(slider->getValue());
+}
+void playerAudio::make_a_playlist() {
+    
+    fileChooser = std::make_unique<juce::FileChooser>(
+        "Select audio files for playlist...",
+        juce::File{},
+        "*.wav;*.mp3");
+    fileChooser->launchAsync(
+        juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectMultipleItems,
+        [this](const juce::FileChooser& fc)
+        {
+            std::vector<File>new_playlist;
+            auto files = fc.getResults();
+            for (auto& file : files) {
+                
+                if (file.existsAsFile()) {
+					new_playlist.push_back(file);
+                }
+            }
+            if (!new_playlist.empty()) {
+
+                playlist = new_playlist;
+
+                sendChangeMessage();
+            }
+        });
 }
