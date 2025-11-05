@@ -9,6 +9,8 @@
 
 using namespace juce;
 
+
+
 class playerAudio : public AudioAppComponent, public juce::ChangeBroadcaster {
     
    
@@ -16,6 +18,7 @@ class playerAudio : public AudioAppComponent, public juce::ChangeBroadcaster {
 public:
     int volume;
     AudioFormatManager formatManager;
+
     AudioThumbnailCache cache{ 5 };
     AudioThumbnail thumbnail{ 256, formatManager, cache };
     std::unique_ptr<juce::AudioFormatReader> reader;
@@ -49,7 +52,7 @@ public:
 	void make_a_playlist();
 	void add_to_playlist();
     void load_track_from_file(int row);
-    
+	void speed(Slider* slider);
     void playNextInPlaylist();
     void playPreviasInPlaylist();
 

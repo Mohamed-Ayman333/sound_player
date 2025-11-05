@@ -38,12 +38,13 @@ class waver : public Component, public ChangeListener
 {
 public:
     playerAudio* pPtr;
+	playerGUI* guiptr;
     Rectangle<int> r;
 	marker posetion_marke{ 0.0 };
 	std::vector<std::unique_ptr<marker>> markers;
 	marker looping_marker[2]{ marker(0.0),marker(0.0) };
 
-    waver(playerAudio* P1);
+    waver(playerAudio* P1, playerGUI* gui);
     
     ~waver() override;
 
@@ -64,6 +65,7 @@ class playerGUI: public Button::Listener,
 public:
 	Slider volumeSlider;
 	Slider positionSlider;
+	Slider speedSlider;
 	
 	
 	TextButton loadButton{ "Load Files"};
@@ -96,7 +98,7 @@ public:
 	
 	
 	playerAudio P1;
-	waver wave{ &P1 };
+	waver wave{ &P1,this };
 	marker*  posetion_marke_ptr = &wave.posetion_marke;
 	bool markerLoopEnabled{ false };
 	bool wasPlayingLastTick = false;

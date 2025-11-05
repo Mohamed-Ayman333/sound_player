@@ -20,6 +20,7 @@ void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 void playerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     transportSource.getNextAudioBlock(bufferToFill);
+	
 }
 
 void playerAudio::releaseResources()
@@ -301,4 +302,14 @@ void playerAudio::playPreviasInPlaylist()
             return;
     }
     load_track_from_file(playlist_index);
+}
+void playerAudio::speed(Slider* slider) {
+    if (readerSource != nullptr) {
+		double pos = transportSource.getCurrentPosition();
+        transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate * slider->getValue());
+		transportSource.setPosition(pos);
+		transportSource.start();
+        sendChangeMessage();
+    
+    }
 }

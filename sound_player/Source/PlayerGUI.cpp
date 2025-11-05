@@ -68,6 +68,11 @@ playerGUI::playerGUI(){
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
     addAndMakeVisible(volumeSlider);
+
+    speedSlider.setRange(0.1, 4, 0.1);
+    speedSlider.setValue(1);
+    speedSlider.addListener(this);
+    addAndMakeVisible(speedSlider);
     
 
     positionSlider.setRange(0, 1 ,0.01);
@@ -128,15 +133,16 @@ void playerGUI::resized()
     next.setBounds(640, 300, 80, 40);
     //sliders
     volumeSlider.setBounds(20, 140, getWidth() - 40, 30);
+    speedSlider.setBounds(20, 250, getWidth() - 40, 30);
     positionSlider.setBounds(20, 480, getWidth() - 40, 30);
     //wave
-    wave.setBounds(20, 380, getWidth() - 40, 60);
+    wave.setBounds(20, 380, getWidth()-40, 60);
 	wave.posetion_marke.setBounds(0, 0, 1, wave.getHeight());
    
 	/*make_a_playlist.setBounds(20, playlists_panel.getTitleBarHeight(), 150, 25);*/
     
     //listbox
-    play_list.setBounds(20,520,960,200);
+    play_list.setBounds(20,520,getWidth()-40, 200);
 	play_list.setRowHeight(20);
     
 
@@ -268,12 +274,25 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     }
     if (button == &back) {
-        
+
+        wave.looping_marker[0].position = 0.0;
+        wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
+        markerLoopEnabled = false;
+		wave.markers.clear();
 		P1.playPreviasInPlaylist();
+        
+        wave.repaint();
+
     }
     if (button == &next) {
         
+        wave.looping_marker[0].position = 0.0;
+        wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
+        markerLoopEnabled = false;
+        wave.markers.clear();
         P1.playNextInPlaylist();
+        wave.repaint();
+
     }
 
 }
@@ -285,6 +304,9 @@ void playerGUI::sliderValueChanged(Slider* slider)
     }
     if (slider == &positionSlider) {
         P1.setPosition(slider);
+    }
+    if (slider == &speedSlider) {
+        P1.speed(slider);
     }
 }
 
@@ -356,7 +378,7 @@ void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source) {
         play_list.updateContent();
 		play_list.repaint();
 		
-        play_list.repaintRow(0);
+		wave.repaint();
     }
 }
 
@@ -365,11 +387,13 @@ void playerGUI::menu_action(int result, playerGUI* gui) {
     if (result == 1) {
         gui->P1.readerSource->setLooping(true);
         gui->markerLoopEnabled = false;
+		wave.repaint();
         
     }
     if (result == 2) {
         gui->P1.readerSource->setLooping(false);
         gui->markerLoopEnabled = true;
+		wave.repaint();
         
     }
     if (result == 3) {
@@ -380,16 +404,18 @@ void playerGUI::menu_action(int result, playerGUI* gui) {
 		gui->P1.readerSource->setLooping(false);
         gui->markerLoopEnabled = false;
         gui->P1.loopPlaylist = false;
+		wave.repaint();
 	}
 }
 
-waver::waver(playerAudio* P1) {
+waver::waver(playerAudio* P1,playerGUI*gui) {
 
     pPtr = P1;
     if (pPtr)
         pPtr->thumbnail.addChangeListener(this);
+	guiptr = gui;
 
-};
+}
 
 void waver::paint(Graphics& g) {
     g.fillAll(juce::Colours::grey);
@@ -404,15 +430,18 @@ void waver::paint(Graphics& g) {
         
         const double start = looping_marker[0].position;
         const double end   = looping_marker[1].position;
-        if (totalLength > 0.0 && end > start)
+        if (totalLength > 0.0 && end > start && guiptr->markerLoopEnabled==true)
         {
-            const int x0 = (int) std::round((start / totalLength) * (double) r.getWidth());
-            const int x1 = (int) std::round((end   / totalLength) * (double) r.getWidth());
+            const int x0 = (int)std::round((start / totalLength) * (double)r.getWidth());
+            const int x1 = (int)std::round((end / totalLength) * (double)r.getWidth());
+            
+            
             const int width = jmax(1, x1 - x0);
             g.setColour(juce::Colours::green.withAlpha(0.25f));
             g.fillRect(r.getX() + x0, r.getY(), width, r.getHeight());
             g.setColour(juce::Colours::green);
             g.drawRect(r.getX() + x0, r.getY(), width, r.getHeight(), 1);
+            
         }
     }
 
