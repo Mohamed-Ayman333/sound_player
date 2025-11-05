@@ -71,8 +71,8 @@ public:
 	TextButton loadButton{ "Load Files"};
 	TextButton restartButton{ "Restart" };
 	TextButton stopButton{ "Stop" };
-	TextButton mute{"mute"};
-	TextButton pauseAndPlay{ "pauseAndPlay" };
+	ImageButton mute{"mute"};
+	ImageButton pauseAndPlay{ "pauseAndPlay" };
 	TextButton goToStart{ "go to start" };
 	TextButton goToEnd{ "go to end" };
 	TextButton loop{ "loop" };

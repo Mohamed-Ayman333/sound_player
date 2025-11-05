@@ -16,6 +16,7 @@ playerGUI::playerGUI(){
     //buttons
     
     loadButton.addListener(this);
+    
     addAndMakeVisible(loadButton);
     
     restartButton.addListener(this);
@@ -25,9 +26,21 @@ playerGUI::playerGUI(){
     addAndMakeVisible(stopButton);
 
     mute.addListener(this);
+    mute.setToggleable(true);
+    mute.setClickingTogglesState(true);
+    mute.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(mute);
 
     pauseAndPlay.addListener(this);
+    pauseAndPlay.setToggleable(true);
+    pauseAndPlay.setClickingTogglesState(true);
+    pauseAndPlay.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(pauseAndPlay);
 
     goToStart.addListener(this);
@@ -67,11 +80,14 @@ playerGUI::playerGUI(){
     volumeSlider.setRange(0, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
+    volumeSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     addAndMakeVisible(volumeSlider);
 
     speedSlider.setRange(0.1, 4, 0.1);
     speedSlider.setValue(1);
     speedSlider.addListener(this);
+    speedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+	speedSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 50, 20);
     addAndMakeVisible(speedSlider);
     
 
@@ -114,35 +130,37 @@ void playerGUI::resized()
 	file_data.setBounds(20, 10, getWidth() - 40, 30);
     //Button
     //r1
-    loadButton.setBounds(20, 60, 100, 40);
-    restartButton.setBounds(140, 60, 80, 40);
-    stopButton.setBounds(240, 60, 80, 40);
-    mute.setBounds(340, 60, 80, 40);
+    loadButton.setBounds(20, 60, 60, 40);
+    stopButton.setBounds(100, 60, 60, 40);
+    goToStart.setBounds(180, 60, 60, 40);
+    pauseAndPlay.setBounds(260, 60, 60, 40);
+    goToEnd.setBounds(340, 60, 60, 40);
+    
     //r2
-    pauseAndPlay.setBounds(20, 180, 100, 40);
-    goToStart.setBounds(140, 180, 80, 40);
-    goToEnd.setBounds(240, 180, 80, 40);
-    loop.setBounds(340, 180, 80, 40);
+    mute.setBounds(20, 260, 60, 40);
+    loop.setBounds(100, 260, 60, 40);
+    backward.setBounds(180, 260, 60, 40);
+    forward.setBounds(260, 260, 60, 40);
+    restartButton.setBounds(340, 260, 60, 40);
     //r3
-    backward.setBounds(20, 300, 80, 40);
-    forward.setBounds(140, 300, 80, 40);
-    playlists.setBounds(240, 300, 80, 40);
-	make_a_playlist.setBounds(340, 300, 80, 40);
-    add_to_playlist.setBounds(440, 300, 80, 40);
-    back.setBounds(540, 300, 80, 40);
-    next.setBounds(640, 300, 80, 40);
+    
+    playlists.setBounds(20, 560, 60, 40);
+	make_a_playlist.setBounds(100, 560, 60, 40);
+    add_to_playlist.setBounds(180, 560, 60, 40);
+    back.setBounds(260, 560, 60, 40);
+    next.setBounds(340, 560, 60, 40);
     //sliders
-    volumeSlider.setBounds(20, 140, getWidth() - 40, 30);
-    speedSlider.setBounds(20, 250, getWidth() - 40, 30);
-    positionSlider.setBounds(20, 480, getWidth() - 40, 30);
+    positionSlider.setBounds(20, 210, getWidth() - 40, 30);
+    volumeSlider.setBounds(getWidth()*0.4, 320, 200, 200);
+    speedSlider.setBounds(50, 320, 30, 200);
     //wave
-    wave.setBounds(20, 380, getWidth()-40, 60);
+    wave.setBounds(20, 130, getWidth()-40, 60);
 	wave.posetion_marke.setBounds(0, 0, 1, wave.getHeight());
    
 	/*make_a_playlist.setBounds(20, playlists_panel.getTitleBarHeight(), 150, 25);*/
     
     //listbox
-    play_list.setBounds(20,520,getWidth()-40, 200);
+    play_list.setBounds(20,620,getWidth()-40, 200);
 	play_list.setRowHeight(20);
     
 
@@ -156,7 +174,8 @@ void playerGUI::resized()
 void playerGUI::paint(Graphics& g)
 {
     
-    g.fillAll(juce::Colours::black);
+	g.setFillType(juce::ColourGradient(juce::Colours::powderblue, getWidth()*0.5, getHeight()*0.5, juce::Colours::deepskyblue, 0, getHeight() - 100, true));
+	g.fillAll();
     
     
 }
@@ -209,10 +228,39 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &mute) {
         P1.mute(&volumeSlider);
+		bool isMuted = button->getToggleState();
+        if (!isMuted) {
+
+            mute.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::mute_png, BinaryData::mute_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::mute_png, BinaryData::mute_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::mute_png, BinaryData::mute_pngSize), 1.0f, Colours::transparentBlack);
+        }
+        else {
+            mute.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack);
+        }
 
     }
     if (button == &pauseAndPlay) {
         P1.pauseAndPlay();
+		bool isPlaying = button->getToggleState();
+        if (!isPlaying) {
+            pauseAndPlay.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack);
+            
+        }
+        else {
+            pauseAndPlay.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack);
+            
+		}
 
     }
     if (button == &goToStart) {
@@ -301,6 +349,19 @@ void playerGUI::sliderValueChanged(Slider* slider)
 {
     if (slider == &volumeSlider) {
         P1.setVolume(slider);
+        if (slider->getValue() == 0.0) {
+
+            mute.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::mute_png, BinaryData::mute_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::mute_png, BinaryData::mute_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::mute_png, BinaryData::mute_pngSize), 1.0f, Colours::transparentBlack);
+        }
+        else {
+            mute.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::volume_png, BinaryData::volume_pngSize), 1.0f, Colours::transparentBlack);
+        }
     }
     if (slider == &positionSlider) {
         P1.setPosition(slider);
@@ -311,6 +372,25 @@ void playerGUI::sliderValueChanged(Slider* slider)
 }
 
 void playerGUI::timerCallback() {
+
+    if (!P1.transportSource.isPlaying()) {
+        pauseAndPlay.setToggleState(true, juce::dontSendNotification);
+        pauseAndPlay.setImages(false, true, true,
+            ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
+            ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
+            ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack);
+        pauseAndPlay.repaint();
+    }
+    else {
+        pauseAndPlay.setToggleState(false, juce::dontSendNotification);
+        pauseAndPlay.setImages(false, true, true,
+            ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack,
+            ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack,
+            ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack);
+        pauseAndPlay.repaint();
+    }
+
+
     positionSlider.setValue(P1.transportSource.getCurrentPosition(), dontSendNotification);
 
     const int w = wave.getWidth();
@@ -371,6 +451,10 @@ void playerGUI::timerCallback() {
         P1.transportSource.setPosition(loopStart);
         P1.transportSource.start();
     }
+    
+    
+
+
 }
 
 void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source) {

@@ -18,7 +18,7 @@ class SimpleAudioPlayer : public JUCEApplication
             
             setContentOwned(new MainComponent(), true); // MainComponent = our UI + logic
             centreWithSize(1000, 1000);
-			
+			setFullScreen(true);
             setVisible(true);
         }
 
