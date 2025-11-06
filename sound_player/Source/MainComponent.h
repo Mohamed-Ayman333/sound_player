@@ -9,7 +9,7 @@ class MainComponent : public juce::AudioAppComponent,
     public juce::Slider::Listener
 {
 public:
-    
+
     playerGUI g1;
     playerGUI g2;
     MainComponent();
@@ -21,14 +21,14 @@ public:
     void releaseResources()override;
 
     void resized() override;
-    
+
 
     // Event handlers
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
 
 private:
-   
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

@@ -20,7 +20,7 @@ void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 void playerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     transportSource.getNextAudioBlock(bufferToFill);
-	
+
 }
 
 void playerAudio::releaseResources()
@@ -49,53 +49,53 @@ void playerAudio::load_track(std::function<void()> onComplete)
                     transportSource.setSource(nullptr);
                     readerSource.reset();
 
-                    
+
                     reader.reset(rawReader);
 
                     {
-                        
 
 
-                        
+
+
                         const std::string pathUtf8 = file.getFullPathName().toStdString();
-                        TagLib::FileRef f (pathUtf8.c_str());
+                        TagLib::FileRef f(pathUtf8.c_str());
 
-                        
-                        if (! f.isNull() && f.tag())
+
+                        if (!f.isNull() && f.tag())
                         {
                             meta.clear();
 
-                            TagLib::Tag *t = f.tag();
-                          
-                            
-                                if (t->title().length())   meta += "Title: " + String(t->title().toCString(true)) + "  ";
-                                if (t->artist().length())  meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
-                                if (t->album().length())   meta += "Album: " + String(t->album().toCString(true)) + "  ";
-                                if (t->year())             meta += "Year: " + String((int)t->year()) + "  ";
-                                if (t->comment().length()) meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
-                                if (t->genre().length())   meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
-                            
+                            TagLib::Tag* t = f.tag();
+
+
+                            if (t->title().length())   meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                            if (t->artist().length())  meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                            if (t->album().length())   meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                            if (t->year())             meta += "Year: " + String((int)t->year()) + "  ";
+                            if (t->comment().length()) meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                            if (t->genre().length())   meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+
                         }
                         else
                         {
                             meta = "No metadata found (try an MP3 with ID3 tags).";
                         }
-                        
+
                         String name = file.getFileName();
 
                         if (name.contains(".wav")) {
                             meta.clear();
                         }
 
-                        
-                    }
-                    
 
-                   
+                    }
+
+
+
                     readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader.get(), false);
 
                     // attach readerSource
-                    transportSource.setSource(readerSource.get(),0,nullptr,reader->sampleRate);
+                    transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
                     transportSource.start();
 
                     thumbnail.clear();
@@ -109,10 +109,10 @@ void playerAudio::load_track(std::function<void()> onComplete)
 }
 
 void playerAudio::setVolume(Slider* slider) {
-   
+
     transportSource.setGain((float)slider->getValue());
-    
-    
+
+
 }
 void playerAudio::mute(Slider* slider) {
     if (slider->getValue() == 0) {
@@ -123,9 +123,9 @@ void playerAudio::mute(Slider* slider) {
         volume = slider->getValue();
         slider->setValue(0);
         setVolume(slider);
-        
+
     }
-  
+
 }
 void playerAudio::restart() {
     stop();
@@ -154,13 +154,13 @@ void playerAudio::forward() {
     transportSource.setPosition(std::min(transportSource.getCurrentPosition() + 10.0, transportSource.getLengthInSeconds()));
 }
 void playerAudio::backward() {
-    transportSource.setPosition(std::max(transportSource.getCurrentPosition() - 10.0,0.0));
+    transportSource.setPosition(std::max(transportSource.getCurrentPosition() - 10.0, 0.0));
 }
 void playerAudio::setPosition(Slider* slider) {
     transportSource.setPosition(slider->getValue());
 }
 void playerAudio::make_a_playlist() {
-    
+
     fileChooser = std::make_unique<juce::FileChooser>(
         "Select audio files for playlist...",
         juce::File{},
@@ -172,9 +172,9 @@ void playerAudio::make_a_playlist() {
             std::vector<File>new_playlist;
             auto files = fc.getResults();
             for (auto& file : files) {
-                
+
                 if (file.existsAsFile()) {
-					new_playlist.push_back(file);
+                    new_playlist.push_back(file);
                 }
             }
             if (!new_playlist.empty()) {
@@ -276,7 +276,7 @@ void playerAudio::playNextInPlaylist()
     if (playlist.empty())
         return;
 
-    
+
     playlist_index++;
     if (playlist_index >= static_cast<int>(playlist.size()))
     {
@@ -292,7 +292,7 @@ void playerAudio::playPreviasInPlaylist()
 {
     if (playlist.empty())
         return;
-    
+
     playlist_index--;
     if (playlist_index < 0)
     {
@@ -305,11 +305,11 @@ void playerAudio::playPreviasInPlaylist()
 }
 void playerAudio::speed(Slider* slider) {
     if (readerSource != nullptr) {
-		double pos = transportSource.getCurrentPosition();
+        double pos = transportSource.getCurrentPosition();
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate * slider->getValue());
-		transportSource.setPosition(pos);
-		transportSource.start();
+        transportSource.setPosition(pos);
+        transportSource.start();
         sendChangeMessage();
-    
+
     }
 }

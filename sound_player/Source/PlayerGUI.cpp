@@ -8,33 +8,33 @@
 using namespace juce;
 
 
-playerGUI::playerGUI(){
-    
+playerGUI::playerGUI() {
+
     addAndMakeVisible(file_data);
     file_data.setColour(Label::textColourId, Colours::white);
-   
+
     //buttons
-    
+
     loadButton.addListener(this);
     loadButton.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::load_png, BinaryData::load_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::load_png, BinaryData::load_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::load_png, BinaryData::load_pngSize), 1.0f, Colours::transparentBlack);
-    
+
     addAndMakeVisible(loadButton);
-    
+
     restartButton.addListener(this);
     restartButton.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(restartButton);
 
     stopButton.addListener(this);
     stopButton.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(stopButton);
 
     mute.addListener(this);
@@ -59,49 +59,53 @@ playerGUI::playerGUI(){
     goToStart.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(goToStart);
 
     goToEnd.addListener(this);
     goToEnd.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(goToEnd);
 
     loop.addListener(this);
+    loop.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::looping_png, BinaryData::looping_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::looping_png, BinaryData::looping_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::looping_png, BinaryData::looping_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(loop);
 
     forward.addListener(this);
     forward.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(forward);
 
     backward.addListener(this);
     backward.setImages(false, true, true,
-		ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(backward);
 
     playlists.addListener(this);
     playlists.setImages(false, true, true,
-		ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(playlists);
 
     make_a_playlist.addListener(this);
-	make_a_playlist.setImages(false, true, true,
-		ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack,
+    make_a_playlist.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(make_a_playlist);
 
     add_to_playlist.addListener(this);
-	add_to_playlist.setImages(false, true, true,
+    add_to_playlist.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::add_to_playlist_png, BinaryData::add_to_playlist_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::add_to_playlist_png, BinaryData::add_to_playlist_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::add_to_playlist_png, BinaryData::add_to_playlist_pngSize), 1.0f, Colours::transparentBlack);
@@ -118,13 +122,13 @@ playerGUI::playerGUI(){
     next.setImages(false, true, true,
         ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack,
         ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack,
-		ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack);
+        ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(next);
 
-    
+
 
     // sliders
-   
+
     volumeSlider.setRange(0, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
@@ -135,31 +139,31 @@ playerGUI::playerGUI(){
     speedSlider.setValue(1);
     speedSlider.addListener(this);
     speedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
-	speedSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 50, 20);
+    speedSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 50, 20);
     addAndMakeVisible(speedSlider);
-    
 
-    positionSlider.setRange(0, 1 ,0.01);
+
+    positionSlider.setRange(0, 1, 0.01);
     positionSlider.setValue(P1.transportSource.getCurrentPosition());
     positionSlider.addListener(this);
     addAndMakeVisible(positionSlider);
     setSize(1000, 1000);
     positionSlider.textFromValueFunction = [this](double value)
-    {
-        int s = (int)std::round(value);
-        int h = s / 3600;
-        int mins = (s % 3600) / 60;
-        int secs = s % 60;
-        return juce::String::formatted("%03d:%02d:%02d",h, mins, secs);
-    };
+        {
+            int s = (int)std::round(value);
+            int h = s / 3600;
+            int mins = (s % 3600) / 60;
+            int secs = s % 60;
+            return juce::String::formatted("%03d:%02d:%02d", h, mins, secs);
+        };
     //wave
 
     wave.addAndMakeVisible(posetion_marke_ptr);
     addAndMakeVisible(wave);
-	
-	file_data.setText("No File Loaded", NotificationType::dontSendNotification);
 
-	//listbox
+    file_data.setText("No File Loaded", NotificationType::dontSendNotification);
+
+    //listbox
     play_list.setModel(&playlist_model);
     addAndMakeVisible(play_list);
 
@@ -168,14 +172,14 @@ playerGUI::playerGUI(){
 
 
 
-	
+
     P1.addChangeListener(this);
-    startTimer(1000/30);
+    startTimer(1000 / 30);
 }
 //button Size And Location
 void playerGUI::resized()
 {
-	file_data.setBounds(20, 10, getWidth() - 40, 30);
+    file_data.setBounds(20, 10, getWidth() - 40, 30);
     //Button
     //r1
     loadButton.setBounds(20, 60, 60, 40);
@@ -183,7 +187,7 @@ void playerGUI::resized()
     goToStart.setBounds(180, 60, 60, 40);
     pauseAndPlay.setBounds(260, 60, 60, 40);
     goToEnd.setBounds(340, 60, 60, 40);
-    
+
     //r2
     mute.setBounds(20, 260, 60, 40);
     loop.setBounds(100, 260, 60, 40);
@@ -191,41 +195,41 @@ void playerGUI::resized()
     forward.setBounds(260, 260, 60, 40);
     restartButton.setBounds(340, 260, 60, 40);
     //r3
-    
+
     playlists.setBounds(20, 560, 60, 40);
-	make_a_playlist.setBounds(100, 560, 60, 40);
+    make_a_playlist.setBounds(100, 560, 60, 40);
     add_to_playlist.setBounds(180, 560, 60, 40);
     back.setBounds(260, 560, 60, 40);
     next.setBounds(340, 560, 60, 40);
     //sliders
     positionSlider.setBounds(20, 210, getWidth() - 40, 30);
-    volumeSlider.setBounds(getWidth()*0.4, 320, 200, 200);
+    volumeSlider.setBounds(getWidth() * 0.4, 320, 200, 200);
     speedSlider.setBounds(50, 320, 30, 200);
     //wave
-    wave.setBounds(20, 130, getWidth()-40, 60);
-	wave.posetion_marke.setBounds(0, 0, 1, wave.getHeight());
-   
-	/*make_a_playlist.setBounds(20, playlists_panel.getTitleBarHeight(), 150, 25);*/
-    
+    wave.setBounds(20, 130, getWidth() - 40, 60);
+    wave.posetion_marke.setBounds(0, 0, 1, wave.getHeight());
+
+    /*make_a_playlist.setBounds(20, playlists_panel.getTitleBarHeight(), 150, 25);*/
+
     //listbox
-    play_list.setBounds(20,620,getWidth()-40, 200);
-	play_list.setRowHeight(20);
-    
-
-    
-    
+    play_list.setBounds(20, 620, getWidth() - 40, 200);
+    play_list.setRowHeight(20);
 
 
-    
+
+
+
+
+
 }
 //screen color
 void playerGUI::paint(Graphics& g)
 {
-    
-	g.setFillType(juce::ColourGradient(juce::Colour::fromRGB(105, 117, 136), getWidth() * 0.5, getHeight() * 0.5, juce::Colour::fromRGB(40, 49, 62), 0, getHeight() - 100, true));
-	g.fillAll();
-    
-    
+
+    g.setFillType(juce::ColourGradient(juce::Colour::fromRGB(105, 117, 136), getWidth() * 0.5, getHeight() * 0.5, juce::Colour::fromRGB(40, 49, 62), 0, getHeight() - 100, true));
+    g.fillAll();
+
+
 }
 
 void playerGUI::buttonClicked(juce::Button* button)
@@ -242,23 +246,27 @@ void playerGUI::buttonClicked(juce::Button* button)
             wave.looping_marker[0].position = 0.0;
             wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
 
-            
-            if (P1.reader&&P1.meta.isEmpty())
+
+            if (P1.reader && P1.meta.isEmpty())
             {
                 P1.meta.clear();
                 auto& metadata = P1.reader->metadataValues;
                 auto keys = metadata.getAllKeys();
                 auto vals = metadata.getAllValues();
-                
-                   
-                    P1.meta += "Name : " + vals[1] + " Artest : "+ vals[0];
-                
+
+
+                P1.meta += "Name : " + vals[1] + " Artest : " + vals[0];
+
             }
-            
+
 
             file_data.setText(P1.meta, NotificationType::dontSendNotification);
-			file_data.repaint();
-        });
+            P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+            P1.transportSource.start();
+            file_data.repaint();
+            });
+        
+
 
     }
 
@@ -266,7 +274,9 @@ void playerGUI::buttonClicked(juce::Button* button)
     {
         //good for now
         P1.restart();
-        
+        P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+        P1.transportSource.start();
+
     }
 
     if (button == &stopButton)
@@ -276,7 +286,7 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &mute) {
         P1.mute(&volumeSlider);
-		bool isMuted = button->getToggleState();
+        bool isMuted = button->getToggleState();
         if (!isMuted) {
 
             mute.setImages(false, true, true,
@@ -294,25 +304,26 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &pauseAndPlay) {
         P1.pauseAndPlay();
-		bool isPlaying = button->getToggleState();
+        bool isPlaying = button->getToggleState();
         if (!isPlaying) {
             pauseAndPlay.setImages(false, true, true,
                 ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack,
                 ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack,
                 ImageCache::getFromMemory(BinaryData::pause_png, BinaryData::pause_pngSize), 1.0f, Colours::transparentBlack);
-            
+
         }
         else {
             pauseAndPlay.setImages(false, true, true,
                 ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
                 ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack,
                 ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize), 1.0f, Colours::transparentBlack);
-            
-		}
+
+        }
+
 
     }
     if (button == &goToStart) {
-        P1.goToStart();    
+        P1.goToStart();
 
     }
     if (button == &goToEnd) {
@@ -320,21 +331,21 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     }
     if (button == &loop) {
-        
-		PopupMenu loop_menu;
-		loop_menu.addItem(1, "loop on song");
-		loop_menu.addItem(2, "loop betwean markers");
-		loop_menu.addItem(3, "loop on playlist");
-		loop_menu.addItem(4, "stop looping");
+
+        PopupMenu loop_menu;
+        loop_menu.addItem(1, "loop on song");
+        loop_menu.addItem(2, "loop betwean markers");
+        loop_menu.addItem(3, "loop on playlist");
+        loop_menu.addItem(4, "stop looping");
         loop_menu.showMenuAsync(juce::PopupMenu::Options(),
             [this](int result)
             {
 
-                this->menu_action(result,this);
+                this->menu_action(result, this);
             });
 
 
-		
+
 
     }
     if (button == &forward) {
@@ -347,26 +358,26 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &playlists) {
 
-		play_list.setVisible(!play_list.isVisible());
+        play_list.setVisible(!play_list.isVisible());
     }
     if (button == &make_a_playlist) {
 
         P1.make_a_playlist();
-  
+
         for (auto& item : P1.playlist)
-              playlist_model.items.push_back(item.getFileName());
-        
-		play_list.updateContent();
+            playlist_model.items.push_back(item.getFileName());
+
+        play_list.updateContent();
 
     }
     if (button == &add_to_playlist) {
 
         P1.add_to_playlist();
-  
+
         for (auto& item : P1.playlist)
-              playlist_model.items.push_back(item.getFileName());
-        
-		play_list.updateContent();
+            playlist_model.items.push_back(item.getFileName());
+
+        play_list.updateContent();
 
     }
     if (button == &back) {
@@ -374,19 +385,22 @@ void playerGUI::buttonClicked(juce::Button* button)
         wave.looping_marker[0].position = 0.0;
         wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
         markerLoopEnabled = false;
-		wave.markers.clear();
-		P1.playPreviasInPlaylist();
-        
+        wave.markers.clear();
+        P1.playPreviasInPlaylist();
+        P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate* speedSlider.getValue());
+        P1.transportSource.start();
         wave.repaint();
 
     }
     if (button == &next) {
-        
+
         wave.looping_marker[0].position = 0.0;
         wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
         markerLoopEnabled = false;
         wave.markers.clear();
         P1.playNextInPlaylist();
+        P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate* speedSlider.getValue());
+        P1.transportSource.start();
         wave.repaint();
 
     }
@@ -472,8 +486,9 @@ void playerGUI::timerCallback() {
                 wave.markers.clear();
                 wave.looping_marker[0].position = 0.0;
                 wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
-				wave.repaint();
-                
+                wave.repaint();
+                P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+                P1.transportSource.start();
                 file_data.setText(P1.meta, NotificationType::dontSendNotification);
             }
         }
@@ -499,8 +514,8 @@ void playerGUI::timerCallback() {
         P1.transportSource.setPosition(loopStart);
         P1.transportSource.start();
     }
-    
-    
+
+
 
 
 }
@@ -508,9 +523,9 @@ void playerGUI::timerCallback() {
 void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source) {
     if (source == &P1) {
         play_list.updateContent();
-		play_list.repaint();
-		
-		wave.repaint();
+        play_list.repaint();
+
+        wave.repaint();
     }
 }
 
@@ -519,33 +534,33 @@ void playerGUI::menu_action(int result, playerGUI* gui) {
     if (result == 1) {
         gui->P1.readerSource->setLooping(true);
         gui->markerLoopEnabled = false;
-		wave.repaint();
-        
+        wave.repaint();
+
     }
     if (result == 2) {
         gui->P1.readerSource->setLooping(false);
         gui->markerLoopEnabled = true;
-		wave.repaint();
-        
+        wave.repaint();
+
     }
     if (result == 3) {
         gui->P1.loopPlaylist = true;
-        
+
     }
     if (result == 4) {
-		gui->P1.readerSource->setLooping(false);
+        gui->P1.readerSource->setLooping(false);
         gui->markerLoopEnabled = false;
         gui->P1.loopPlaylist = false;
-		wave.repaint();
-	}
+        wave.repaint();
+    }
 }
 
-waver::waver(playerAudio* P1,playerGUI*gui) {
+waver::waver(playerAudio* P1, playerGUI* gui) {
 
     pPtr = P1;
     if (pPtr)
         pPtr->thumbnail.addChangeListener(this);
-	guiptr = gui;
+    guiptr = gui;
 
 }
 
@@ -559,21 +574,21 @@ void waver::paint(Graphics& g) {
         const double totalLength = pPtr->thumbnail.getTotalLength();
         pPtr->thumbnail.drawChannels(g, r, 0.0, totalLength > 0.0 ? totalLength : 1.0, 0.8);
 
-        
+
         const double start = looping_marker[0].position;
-        const double end   = looping_marker[1].position;
-        if (totalLength > 0.0 && end > start && guiptr->markerLoopEnabled==true)
+        const double end = looping_marker[1].position;
+        if (totalLength > 0.0 && end > start && guiptr->markerLoopEnabled == true)
         {
             const int x0 = (int)std::round((start / totalLength) * (double)r.getWidth());
             const int x1 = (int)std::round((end / totalLength) * (double)r.getWidth());
-            
-            
+
+
             const int width = jmax(1, x1 - x0);
             g.setColour(juce::Colours::green.withAlpha(0.25f));
             g.fillRect(r.getX() + x0, r.getY(), width, r.getHeight());
             g.setColour(juce::Colours::green);
             g.drawRect(r.getX() + x0, r.getY(), width, r.getHeight(), 1);
-            
+
         }
     }
 
@@ -592,9 +607,9 @@ void waver::mouseDown(const MouseEvent& event)
     const double total = pPtr->thumbnail.getTotalLength();
     if (total <= 0.0)
         return;
-    
-        const int x = jlimit(0, w - 1, event.getPosition().x);
-        const double newPositionSeconds = (double)x / (double)w * total;
+
+    const int x = jlimit(0, w - 1, event.getPosition().x);
+    const double newPositionSeconds = (double)x / (double)w * total;
     if (event.mods.isLeftButtonDown()) {
         pPtr->transportSource.setPosition(newPositionSeconds);
 
@@ -607,11 +622,11 @@ void waver::mouseDown(const MouseEvent& event)
         }
     }
     if (event.mods.isRightButtonDown()) {
-    
+
         std::make_unique<marker>(newPositionSeconds);
         markers.push_back(std::make_unique<marker>(newPositionSeconds));
         this->addAndMakeVisible(&*(markers.back()));
-		markers.back()->setBounds(jlimit(0, getWidth() - 1, x - 1), 0, 5, getHeight());
+        markers.back()->setBounds(jlimit(0, getWidth() - 1, x - 1), 0, 5, getHeight());
 
     }
     repaint();
@@ -619,7 +634,7 @@ void waver::mouseDown(const MouseEvent& event)
 
 void waver::mouseDrag(const MouseEvent& event)
 {
-    
+
     if (pPtr == nullptr)
         return;
 
@@ -633,7 +648,7 @@ void waver::mouseDrag(const MouseEvent& event)
 
     int x = event.getPosition().x;
     x = jlimit(0, w - 1, x);
-    const double newPositionSeconds = (double) x / (double) w * total;
+    const double newPositionSeconds = (double)x / (double)w * total;
 
     pPtr->transportSource.setPosition(newPositionSeconds);
     pPtr->transportSource.start();
@@ -656,7 +671,7 @@ void waver::changeListenerCallback(ChangeBroadcaster* source)
         {
             const double len = pPtr->transportSource.getLengthInSeconds();
 
-           
+
             if (looping_marker[1].position == 0.0 || looping_marker[1].position == pPtr->transportSource.getLengthInSeconds())
             {
                 looping_marker[0].position = 0.0;
@@ -686,10 +701,10 @@ void marker::paint(Graphics& g) {
 void marker::mouseDown(const MouseEvent& event)
 {
     if (event.mods.isLeftButtonDown()) {
-		 waver* parentWaver = dynamic_cast<waver*>(getParentComponent());
+        waver* parentWaver = dynamic_cast<waver*>(getParentComponent());
         if (parentWaver && parentWaver->pPtr) {
             parentWaver->pPtr->transportSource.setPosition(position);
-		}
+        }
     }
     if (event.mods.isRightButtonDown()) {
         auto* parentWaver = dynamic_cast<waver*>(getParentComponent());
@@ -698,19 +713,19 @@ void marker::mouseDown(const MouseEvent& event)
             menu.addSeparator();
             menu.addItem(1, "Make it a looping start");
             menu.addItem(2, "Make it a looping end");
-			menu.addItem(3, "remove from looping");
-			menu.addItem(4, "Delete Marker");
+            menu.addItem(3, "remove from looping");
+            menu.addItem(4, "Delete Marker");
 
             menu.showMenuAsync(juce::PopupMenu::Options(),
                 [this](int result)
                 {
-                    
+
                     this->menu_action(result, dynamic_cast<waver*>(getParentComponent()));
                 });
 
-            
+
         }
-    
+
     }
 
 }
@@ -721,11 +736,11 @@ void marker::menu_action(int option, waver* parentWaver)
     {
         if (parentWaver && parentWaver->pPtr)
         {
-            if(position>=parentWaver->looping_marker[0].position&& position <= parentWaver->looping_marker[1].position)
-				parentWaver->looping_marker[0].position = position;
+            if (position >= parentWaver->looping_marker[0].position && position <= parentWaver->looping_marker[1].position)
+                parentWaver->looping_marker[0].position = position;
 
-            parentWaver->repaint(); 
-            
+            parentWaver->repaint();
+
         }
     }
     if (option == 2)
@@ -756,31 +771,31 @@ void marker::menu_action(int option, waver* parentWaver)
     {
         if (parentWaver)
         {
-            if(this->position== parentWaver->looping_marker[0].position)
-				parentWaver->looping_marker[0].position = 0.0;
+            if (this->position == parentWaver->looping_marker[0].position)
+                parentWaver->looping_marker[0].position = 0.0;
             if (this->position == parentWaver->looping_marker[1].position)
-				parentWaver->looping_marker[1].position = parentWaver->pPtr->transportSource.getLengthInSeconds();
-            
+                parentWaver->looping_marker[1].position = parentWaver->pPtr->transportSource.getLengthInSeconds();
+
             parentWaver->removeChildComponent(this);
 
-			parentWaver->repaint();
+            parentWaver->repaint();
         }
     }
 }
 
-listModel::listModel(playerAudio* P1,playerGUI*gui) {
+listModel::listModel(playerAudio* P1, playerGUI* gui) {
     pPtr = P1;
     guiptr = gui;
 }
 
 int listModel::getNumRows() {
-    
-        if (pPtr == nullptr)
-            return 0;
 
-        
-        return pPtr->playlist.size();
-    
+    if (pPtr == nullptr)
+        return 0;
+
+
+    return pPtr->playlist.size();
+
 }
 
 void listModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
@@ -801,8 +816,8 @@ void listModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int heig
 }
 
 void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
-    if(row < 0 || row >= getNumRows())
-		return;
+    if (row < 0 || row >= getNumRows())
+        return;
     if (e.mods.isLeftButtonDown()) {
         if (pPtr) {
             pPtr->transportSource.setPosition(0.0);
@@ -810,13 +825,13 @@ void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
             pPtr->transportSource.start();
 
 
-            
+
 
             const double len = pPtr->transportSource.getLengthInSeconds();
             guiptr->positionSlider.setRange(0.0, len > 0.0 ? len : 1.0, 0.01);
             guiptr->positionSlider.setValue(0.0);
 
-            
+
 
 
             if (pPtr->reader && pPtr->meta.isEmpty())
@@ -833,6 +848,8 @@ void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
 
 
             guiptr->file_data.setText(pPtr->meta, NotificationType::dontSendNotification);
+            pPtr->transportSource.setSource(pPtr->readerSource.get(), 0, nullptr, pPtr->reader->sampleRate * guiptr->speedSlider.getValue());
+            pPtr->transportSource.start();
             guiptr->file_data.repaint();
         }
     }
@@ -855,11 +872,10 @@ void listModel::menu_action(int option, int row)
     std::advance(it, row);
     if (option == 1)
     {
-        
+
     }
     if (option == 2)
     {
         items.erase(it);
     }
 }
-

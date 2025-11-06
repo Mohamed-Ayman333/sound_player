@@ -12,8 +12,8 @@ using namespace juce;
 
 
 class playerAudio : public AudioAppComponent, public juce::ChangeBroadcaster {
-    
-   
+
+
 
 public:
     int volume;
@@ -29,11 +29,11 @@ public:
     String meta = "";
     /*std::vector<std::vector<File>>playlists;*/
     std::vector<File>playlist;
-	int playlist_index = 0;
+    int playlist_index = 0;
     bool loopPlaylist = false;
 
-    
-    
+
+
     playerAudio();
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate)override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)override;
@@ -49,14 +49,14 @@ public:
     void forward();
     void backward();
     void setPosition(Slider* slider);
-	void make_a_playlist();
-	void add_to_playlist();
+    void make_a_playlist();
+    void add_to_playlist();
     void load_track_from_file(int row);
-	void speed(Slider* slider);
+    void speed(Slider* slider);
     void playNextInPlaylist();
     void playPreviasInPlaylist();
 
-    
-    
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerAudio)
 };
