@@ -222,7 +222,7 @@ void playerGUI::resized()
 void playerGUI::paint(Graphics& g)
 {
     
-	g.setFillType(juce::ColourGradient(juce::Colours::powderblue, getWidth()*0.5, getHeight()*0.5, juce::Colours::deepskyblue, 0, getHeight() - 100, true));
+	g.setFillType(juce::ColourGradient(juce::Colour::fromRGB(105, 117, 136), getWidth() * 0.5, getHeight() * 0.5, juce::Colour::fromRGB(40, 49, 62), 0, getHeight() - 100, true));
 	g.fillAll();
     
     
