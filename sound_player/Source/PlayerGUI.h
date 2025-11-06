@@ -68,21 +68,21 @@ public:
 	Slider speedSlider;
 	
 	
-	TextButton loadButton{ "Load Files"};
-	TextButton restartButton{ "Restart" };
-	TextButton stopButton{ "Stop" };
+	ImageButton loadButton{ "Load Files" };
+	ImageButton restartButton{ "Restart" };
+	ImageButton stopButton{ "Stop" };
 	ImageButton mute{"mute"};
 	ImageButton pauseAndPlay{ "pauseAndPlay" };
-	TextButton goToStart{ "go to start" };
-	TextButton goToEnd{ "go to end" };
+	ImageButton goToStart{ "go to start" };
+	ImageButton goToEnd{ "go to end" };
 	TextButton loop{ "loop" };
-	TextButton forward{ "10s forward" };
-	TextButton backward{ "10s backward" };
-	TextButton playlists{ "playlists" };
-	TextButton make_a_playlist { "make a playlist" };
-	TextButton add_to_playlist { "add to playlist" };
-	TextButton next { "next track" };
-	TextButton back { "last track" };
+	ImageButton forward{ "10s forward" };
+	ImageButton backward{ "10s backward" };
+	ImageButton playlists{ "playlists" };
+	ImageButton make_a_playlist{ "make a playlist" };
+	ImageButton add_to_playlist{ "add to playlist" };
+	ImageButton next{ "next track" };
+	ImageButton back { "last track" };
 	
 	listModel playlist_model{&P1,this};
 	ListBox play_list;

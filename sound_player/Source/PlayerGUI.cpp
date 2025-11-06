@@ -16,13 +16,25 @@ playerGUI::playerGUI(){
     //buttons
     
     loadButton.addListener(this);
+    loadButton.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::load_png, BinaryData::load_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::load_png, BinaryData::load_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::load_png, BinaryData::load_pngSize), 1.0f, Colours::transparentBlack);
     
     addAndMakeVisible(loadButton);
     
     restartButton.addListener(this);
+    restartButton.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::restart_png, BinaryData::restart_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(restartButton);
 
     stopButton.addListener(this);
+    stopButton.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(stopButton);
 
     mute.addListener(this);
@@ -44,33 +56,69 @@ playerGUI::playerGUI(){
     addAndMakeVisible(pauseAndPlay);
 
     goToStart.addListener(this);
+    goToStart.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::go_to_start_png, BinaryData::go_to_start_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(goToStart);
 
     goToEnd.addListener(this);
+    goToEnd.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::go_to_end_png, BinaryData::go_to_end_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(goToEnd);
 
     loop.addListener(this);
     addAndMakeVisible(loop);
 
     forward.addListener(this);
+    forward.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::f_png, BinaryData::f_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(forward);
 
     backward.addListener(this);
+    backward.setImages(false, true, true,
+		ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::b_png, BinaryData::b_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(backward);
 
     playlists.addListener(this);
+    playlists.setImages(false, true, true,
+		ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::playlist_png, BinaryData::playlist_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(playlists);
 
     make_a_playlist.addListener(this);
+	make_a_playlist.setImages(false, true, true,
+		ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::plus_png, BinaryData::plus_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(make_a_playlist);
 
     add_to_playlist.addListener(this);
+	add_to_playlist.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::add_to_playlist_png, BinaryData::add_to_playlist_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::add_to_playlist_png, BinaryData::add_to_playlist_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::add_to_playlist_png, BinaryData::add_to_playlist_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(add_to_playlist);
 
     back.addListener(this);
+    back.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::back_png, BinaryData::back_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::back_png, BinaryData::back_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::back_png, BinaryData::back_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(back);
 
     next.addListener(this);
+    next.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack,
+		ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(next);
 
     
