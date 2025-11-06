@@ -11,6 +11,7 @@ class MainComponent : public juce::AudioAppComponent,
 public:
     
     playerGUI g1;
+    playerGUI g2;
     MainComponent();
     ~MainComponent() override;
 
@@ -19,7 +20,7 @@ public:
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)override;
     void releaseResources()override;
 
-    
+    void resized() override;
     
 
     // Event handlers

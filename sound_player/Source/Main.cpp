@@ -15,8 +15,10 @@ class SimpleAudioPlayer : public JUCEApplication
             : DocumentWindow(name, Colours::black, DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
+            
             setContentOwned(new MainComponent(), true); // MainComponent = our UI + logic
-            centreWithSize(1000, 700);
+            centreWithSize(1000, 1000);
+			setFullScreen(true);
             setVisible(true);
         }
 

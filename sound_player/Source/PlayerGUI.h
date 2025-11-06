@@ -6,17 +6,20 @@
 
 using namespace juce;
 class waver;
+class playerGUI;
 class listModel :public ListBoxModel {
 
 	public:
 	playerAudio* pPtr;
 	std::vector<String> items;
+	playerGUI* guiptr;
 	
-	listModel(playerAudio* P1);
+	listModel(playerAudio* P1,playerGUI*gui);
 	int getNumRows() override;
 	void paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected) override;
 	void listBoxItemClicked(int row, const juce::MouseEvent& e) override;
 	void menu_action(int option, int row);
+
 };
 class marker:public Component {
 
@@ -35,12 +38,13 @@ class waver : public Component, public ChangeListener
 {
 public:
     playerAudio* pPtr;
+	playerGUI* guiptr;
     Rectangle<int> r;
 	marker posetion_marke{ 0.0 };
 	std::vector<std::unique_ptr<marker>> markers;
 	marker looping_marker[2]{ marker(0.0),marker(0.0) };
 
-    waver(playerAudio* P1);
+    waver(playerAudio* P1, playerGUI* gui);
     
     ~waver() override;
 
@@ -55,30 +59,32 @@ public:
 };
 
 class playerGUI: public Button::Listener,
-	public Slider::Listener,public Component,public Timer {
+	public Slider::Listener,public Component,public Timer,public ChangeListener {
 
 	
-
+public:
 	Slider volumeSlider;
 	Slider positionSlider;
+	Slider speedSlider;
 	
 	
-	TextButton loadButton{ "Load Files"};
-	TextButton restartButton{ "Restart" };
-	TextButton stopButton{ "Stop" };
-	TextButton mute{"mute"};
-	TextButton pauseAndPlay{ "pauseAndPlay" };
-	TextButton goToStart{ "go to start" };
-	TextButton goToEnd{ "go to end" };
+	ImageButton loadButton{ "Load Files" };
+	ImageButton restartButton{ "Restart" };
+	ImageButton stopButton{ "Stop" };
+	ImageButton mute{"mute"};
+	ImageButton pauseAndPlay{ "pauseAndPlay" };
+	ImageButton goToStart{ "go to start" };
+	ImageButton goToEnd{ "go to end" };
 	TextButton loop{ "loop" };
-	TextButton forward{ "10s forward" };
-	TextButton backward{ "10s backward" };
-	TextButton playlists{ "playlists" };
-	TextButton library { "open library" };
-	TextButton make_a_playlist { "make a playlist" };
-	SidePanel library_panel{"library",200,true};
-	SidePanel playlists_panel{ "playlists",200,true};
-	listModel playlist_model{&P1};
+	ImageButton forward{ "10s forward" };
+	ImageButton backward{ "10s backward" };
+	ImageButton playlists{ "playlists" };
+	ImageButton make_a_playlist{ "make a playlist" };
+	ImageButton add_to_playlist{ "add to playlist" };
+	ImageButton next{ "next track" };
+	ImageButton back { "last track" };
+	
+	listModel playlist_model{&P1,this};
 	ListBox play_list;
 	
 
@@ -88,20 +94,22 @@ class playerGUI: public Button::Listener,
 	
 	
 
-public:
+
 	
 	
 	playerAudio P1;
-	waver wave{ &P1 };
+	waver wave{ &P1,this };
 	marker*  posetion_marke_ptr = &wave.posetion_marke;
 	bool markerLoopEnabled{ false };
+	bool wasPlayingLastTick = false;
+
 
 	playerGUI();
 	
 	
 
 	//screen color
-	void paint(juce::Graphics& g) override;
+	void paint(Graphics& g) override;
 	//button Size And Location
 	void resized() override;
 
@@ -109,6 +117,8 @@ public:
 	void sliderValueChanged(juce::Slider* slider) override;
 	void timerCallback();
 	void changeListenerCallback(juce::ChangeBroadcaster* source);
+	
+	void menu_action(int result, playerGUI* gui);
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(playerGUI)
