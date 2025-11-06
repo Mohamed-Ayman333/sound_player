@@ -7,14 +7,29 @@
 using namespace juce;
 class waver;
 class playerGUI;
-class listModel :public ListBoxModel {
+class marker;
+class playlistModel :public ListBoxModel {
 
 public:
 	playerAudio* pPtr;
 	std::vector<String> items;
 	playerGUI* guiptr;
 
-	listModel(playerAudio* P1, playerGUI* gui);
+	playlistModel(playerAudio* P1, playerGUI* gui);
+	int getNumRows() override;
+	void paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected) override;
+	void listBoxItemClicked(int row, const juce::MouseEvent& e) override;
+	void menu_action(int option, int row);
+
+};
+class marklistModel :public ListBoxModel {
+
+public:
+	playerAudio* pPtr;
+	//std::vector<marker> items;
+	playerGUI* guiptr;
+
+	marklistModel(playerAudio* P1, playerGUI* gui);
 	int getNumRows() override;
 	void paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected) override;
 	void listBoxItemClicked(int row, const juce::MouseEvent& e) override;
@@ -83,10 +98,12 @@ public:
 	ImageButton add_to_playlist{ "add to playlist" };
 	ImageButton next{ "next track" };
 	ImageButton back{ "last track" };
+	ImageButton markes;
 
-	listModel playlist_model{ &P1,this };
+	playlistModel playlist_model{ &P1,this };
 	ListBox play_list;
-
+	marklistModel marklist_model{ &P1,this };
+	ListBox mark_list;
 
 	Label file_data;
 

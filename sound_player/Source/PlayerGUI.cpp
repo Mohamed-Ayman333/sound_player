@@ -125,6 +125,13 @@ playerGUI::playerGUI() {
         ImageCache::getFromMemory(BinaryData::next_png, BinaryData::next_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(next);
 
+    markes.addListener(this);
+    markes.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::marks_png, BinaryData::marks_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::marks_png, BinaryData::marks_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::marks_png, BinaryData::marks_pngSize), 1.0f, Colours::transparentBlack);
+    addAndMakeVisible(markes);
+
 
 
     // sliders
@@ -166,7 +173,11 @@ playerGUI::playerGUI() {
     //listbox
     play_list.setModel(&playlist_model);
     addAndMakeVisible(play_list);
+    play_list.setVisible(false);
 
+    mark_list.setModel(&marklist_model);
+    addAndMakeVisible(mark_list);
+    mark_list.setVisible(false);
 
 
 
@@ -201,6 +212,7 @@ void playerGUI::resized()
     add_to_playlist.setBounds(180, 560, 60, 40);
     back.setBounds(260, 560, 60, 40);
     next.setBounds(340, 560, 60, 40);
+    markes.setBounds(420, 560, 60, 40);
     //sliders
     positionSlider.setBounds(20, 210, getWidth() - 40, 30);
     volumeSlider.setBounds(getWidth() * 0.4, 320, 200, 200);
@@ -214,6 +226,9 @@ void playerGUI::resized()
     //listbox
     play_list.setBounds(20, 620, getWidth() - 40, 200);
     play_list.setRowHeight(20);
+
+    mark_list.setBounds(20, 620, getWidth() - 40, 200);
+    mark_list.setRowHeight(20);
 
 
 
@@ -245,7 +260,8 @@ void playerGUI::buttonClicked(juce::Button* button)
 
             wave.looping_marker[0].position = 0.0;
             wave.looping_marker[1].position = len > 0.0 ? len : 1.0;
-
+            wave.markers.clear();
+            this->mark_list.updateContent();
 
             if (P1.reader && P1.meta.isEmpty())
             {
@@ -357,6 +373,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     }
     if (button == &playlists) {
+		mark_list.setVisible(false);
 
         play_list.setVisible(!play_list.isVisible());
     }
@@ -404,6 +421,10 @@ void playerGUI::buttonClicked(juce::Button* button)
         wave.repaint();
 
     }
+    if (button == &markes) {
+        play_list.setVisible(false);
+		mark_list.setVisible(!mark_list.isVisible());
+	}
 
 }
 
@@ -627,6 +648,7 @@ void waver::mouseDown(const MouseEvent& event)
         markers.push_back(std::make_unique<marker>(newPositionSeconds));
         this->addAndMakeVisible(&*(markers.back()));
         markers.back()->setBounds(jlimit(0, getWidth() - 1, x - 1), 0, 5, getHeight());
+		guiptr->mark_list.updateContent();
 
     }
     repaint();
@@ -777,18 +799,20 @@ void marker::menu_action(int option, waver* parentWaver)
                 parentWaver->looping_marker[1].position = parentWaver->pPtr->transportSource.getLengthInSeconds();
 
             parentWaver->removeChildComponent(this);
-
+            parentWaver->markers.erase(std::remove_if(parentWaver->markers.begin(), parentWaver->markers.end(),
+				[this](const std::unique_ptr<marker>& m) { return m.get() == this; }), parentWaver->markers.end());
+			parentWaver->guiptr->mark_list.updateContent();
             parentWaver->repaint();
         }
     }
 }
 
-listModel::listModel(playerAudio* P1, playerGUI* gui) {
+playlistModel::playlistModel(playerAudio* P1, playerGUI* gui) {
     pPtr = P1;
     guiptr = gui;
 }
 
-int listModel::getNumRows() {
+int playlistModel::getNumRows() {
 
     if (pPtr == nullptr)
         return 0;
@@ -798,7 +822,7 @@ int listModel::getNumRows() {
 
 }
 
-void listModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
+void playlistModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
 {
     if (rowIsSelected)
         g.fillAll(juce::Colours::lightblue);
@@ -811,11 +835,11 @@ void listModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int heig
     g.setColour(juce::Colours::white);
     juce::String fileName = pPtr->playlist[rowNumber].getFileNameWithoutExtension();
 
-    // Draw centered vertically in the row
+    
     g.drawText(fileName, 10, 0, width - 20, height, juce::Justification::centredLeft, true);
 }
 
-void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
+void playlistModel::listBoxItemClicked(int row, const MouseEvent& e) {
     if (row < 0 || row >= getNumRows())
         return;
     if (e.mods.isLeftButtonDown()) {
@@ -824,7 +848,10 @@ void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
             pPtr->load_track_from_file(row);
             pPtr->transportSource.start();
 
-
+            guiptr->wave.looping_marker[0].position = 0.0;
+            guiptr->wave.looping_marker[1].position = guiptr->wave.pPtr->transportSource.getLengthInSeconds();
+            guiptr->markerLoopEnabled = false;
+            guiptr->wave.markers.clear();
 
 
             const double len = pPtr->transportSource.getLengthInSeconds();
@@ -866,7 +893,7 @@ void listModel::listBoxItemClicked(int row, const MouseEvent& e) {
     }
 }
 
-void listModel::menu_action(int option, int row)
+void playlistModel::menu_action(int option, int row)
 {
     auto it = items.begin();
     std::advance(it, row);
@@ -878,4 +905,104 @@ void listModel::menu_action(int option, int row)
     {
         items.erase(it);
     }
+}
+
+marklistModel::marklistModel(playerAudio* P1, playerGUI* gui) {
+	pPtr = P1;
+	guiptr = gui;
+}
+
+int marklistModel::getNumRows() {
+    if (pPtr == nullptr)
+        return 0;
+    return guiptr->wave.markers.size();
+}
+
+void marklistModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
+{
+    if (rowIsSelected)
+        g.fillAll(juce::Colours::lightblue);
+    else
+        g.fillAll(juce::Colours::darkgrey);
+    if (pPtr == nullptr || rowNumber < 0 || rowNumber >= guiptr->wave.markers.size())
+        return;
+    g.setColour(juce::Colours::white);
+	
+    int s = (int)std::round(guiptr->wave.markers[rowNumber]->position);
+    int h = s / 3600;
+    int mins = (s % 3600) / 60;
+    int secs = s % 60;
+    juce::String markPos = juce::String::formatted("Marker at : % 03d: % 02d : % 02d", h,mins,secs);
+    
+    g.drawText(markPos, 10, 0, width - 20, height, juce::Justification::centredLeft, true);
+}
+
+void marklistModel::listBoxItemClicked(int row, const MouseEvent& e) {
+    if (row < 0 || row >= getNumRows())
+        return;
+    if (e.mods.isLeftButtonDown()) {
+        if (pPtr) {
+            pPtr->transportSource.setPosition(guiptr->wave.markers[row]->position);
+            pPtr->transportSource.start();
+        }
+    }
+    if (e.mods.isRightButtonDown()) {
+        PopupMenu menu;
+        menu.addSeparator();
+        menu.addItem(1, "Make it a looping start");
+        menu.addItem(2, "Make it a looping end");
+        menu.addItem(3, "remove from looping");
+        menu.addItem(4, "Delete Marker");
+        menu.showMenuAsync(juce::PopupMenu::Options(),
+            [this, row](int result)
+            {
+                this->menu_action(result, row);
+            });
+    }
+}
+
+void marklistModel::menu_action(int option, int row)
+{
+    if (option == 1)
+    {
+        if (pPtr && guiptr)
+        {
+            if (guiptr->wave.markers[row]->position >= guiptr->wave.looping_marker[0].position && guiptr->wave.markers[row]->position <= guiptr->wave.looping_marker[1].position)
+                guiptr->wave.looping_marker[0].position = guiptr->wave.markers[row]->position;
+            guiptr->wave.repaint();
+        }
+    }
+    if (option == 2)
+    {
+        if (pPtr && guiptr)
+        {
+            if (guiptr->wave.markers[row]->position >= guiptr->wave.looping_marker[0].position && guiptr->wave.markers[row]->position <= guiptr->wave.looping_marker[1].position)
+				guiptr->wave.looping_marker[1].position = guiptr->wave.markers[row]->position;
+            guiptr->wave.repaint();
+        }
+	}
+    if (option == 3)
+    {
+        if (pPtr && guiptr)
+        {
+            if (guiptr->wave.markers[row]->position == guiptr->wave.looping_marker[0].position)
+                guiptr->wave.looping_marker[0].position = 0.0;
+            if (guiptr->wave.markers[row]->position == guiptr->wave.looping_marker[1].position)
+                guiptr->wave.looping_marker[1].position = pPtr->transportSource.getLengthInSeconds();
+            guiptr->wave.repaint();
+        }
+    }
+    if (option == 4)
+    {
+        if (pPtr && guiptr)
+        {
+            if (guiptr->wave.markers[row]->position == guiptr->wave.looping_marker[0].position)
+                guiptr->wave.looping_marker[0].position = 0.0;
+            if (guiptr->wave.markers[row]->position == guiptr->wave.looping_marker[1].position)
+                guiptr->wave.looping_marker[1].position = pPtr->transportSource.getLengthInSeconds();
+            guiptr->wave.removeChildComponent(guiptr->wave.markers[row].get());
+            guiptr->wave.markers.erase(guiptr->wave.markers.begin() + row);
+            guiptr->wave.repaint();
+        }
+	}
 }
