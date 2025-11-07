@@ -27,7 +27,7 @@ public:
     std::unique_ptr<juce::FileChooser> fileChooser;
     StringPairArray fileMetadata;
     String meta = "";
-    /*std::vector<std::vector<File>>playlists;*/
+    
     std::vector<File>playlist;
     int playlist_index = 0;
     bool loopPlaylist = false;

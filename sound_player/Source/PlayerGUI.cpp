@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <random>
+#include <fileref.h>
+#include <tag.h>
 
 
 using namespace juce;
@@ -393,8 +395,6 @@ void playerGUI::buttonClicked(juce::Button* button)
 
         P1.make_a_playlist();
 
-        
-
         play_list.updateContent();
 
     }
@@ -408,15 +408,89 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     }
     if (button == &back) {
+        
+            wave.looping_marker[0].position = 0.0;
+            wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
+            markerLoopEnabled = false;
+            wave.markers.clear();
+            P1.playPreviasInPlaylist();
+            if (P1.reader != nullptr && P1.readerSource != nullptr) {
+                P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+                P1.transportSource.start();
+                file_data.setText(P1.meta, juce::dontSendNotification);
+                wave.repaint();
 
-        wave.looping_marker[0].position = 0.0;
-        wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
-        markerLoopEnabled = false;
-        wave.markers.clear();
-        P1.playPreviasInPlaylist();
-        P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate* speedSlider.getValue());
-        P1.transportSource.start();
-        wave.repaint();
+
+                {
+
+
+
+
+                    const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
+                    TagLib::FileRef f(pathUtf8.c_str());
+
+
+                    if (!f.isNull() && f.tag())
+                    {
+                        P1.meta.clear();
+
+                        TagLib::Tag* t = f.tag();
+
+
+                        if (t->title().length())   P1.meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                        if (t->artist().length())  P1.meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                        if (t->album().length())   P1.meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                        if (t->year())             P1.meta += "Year: " + String((int)t->year()) + "  ";
+                        if (t->comment().length()) P1.meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                        if (t->genre().length())   P1.meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+                    else
+                    {
+                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+
+                    String name = P1.playlist[P1.playlist_index].getFileName();
+
+                    if (name.contains(".wav")) {
+                        P1.meta.clear();
+                    }
+                    if (P1.reader && P1.meta.isEmpty())
+                    {
+                        P1.meta.clear();
+                        auto& metadata = P1.reader->metadataValues;
+
+                        auto keys = metadata.getAllKeys();
+                        auto vals = metadata.getAllValues();
+
+
+                        if (vals.size() >= 2)
+                        {
+                            P1.meta += "Name : " + vals[1] + " Artest : " + vals[0];
+                        }
+                        else
+                        {
+
+                            P1.meta = "File metadata not fully available.";
+                        }
+                    }
+                    file_data.setText(P1.meta, NotificationType::dontSendNotification);
+
+                }
+
+
+
+            }
+            
+
+
+            
+
+
+
+        
+
 
     }
     if (button == &next) {
@@ -427,9 +501,79 @@ void playerGUI::buttonClicked(juce::Button* button)
             markerLoopEnabled = false;
             wave.markers.clear();
             P1.playNextInPlaylist();
-            P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
-            P1.transportSource.start();
-            wave.repaint();
+            if (P1.reader != nullptr && P1.readerSource != nullptr) {
+                P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+                P1.transportSource.start();
+                file_data.setText(P1.meta, juce::dontSendNotification);
+                wave.repaint();
+
+
+                {
+
+
+
+
+                    const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
+                    TagLib::FileRef f(pathUtf8.c_str());
+
+
+                    if (!f.isNull() && f.tag())
+                    {
+                        P1.meta.clear();
+
+                        TagLib::Tag* t = f.tag();
+
+
+                        if (t->title().length())   P1.meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                        if (t->artist().length())  P1.meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                        if (t->album().length())   P1.meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                        if (t->year())             P1.meta += "Year: " + String((int)t->year()) + "  ";
+                        if (t->comment().length()) P1.meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                        if (t->genre().length())   P1.meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+                    else
+                    {
+                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+
+                    String name = P1.playlist[P1.playlist_index].getFileName();
+
+                    if (name.contains(".wav")) {
+                        P1.meta.clear();
+                    }
+                    if (P1.reader && P1.meta.isEmpty())
+                    {
+                        P1.meta.clear();
+                        auto& metadata = P1.reader->metadataValues;
+
+                        auto keys = metadata.getAllKeys();
+                        auto vals = metadata.getAllValues();
+
+
+                        if (vals.size() >= 2)
+                        {
+                            P1.meta += "Name : " + vals[1] + " Artest : " + vals[0];
+                        }
+                        else
+                        {
+
+                            P1.meta = "File metadata not fully available.";
+                        }
+                    }
+                    file_data.setText(P1.meta, NotificationType::dontSendNotification);
+
+                }
+
+
+            }
+            else {
+                // Failure (e.g., end of playlist): Cleanly stop the transport
+                P1.transportSource.stop();
+                P1.transportSource.setSource(nullptr);
+                file_data.setText("No next track available or playlist is empty.", juce::dontSendNotification);
+            }
         }
         else
         {
@@ -443,10 +587,85 @@ void playerGUI::buttonClicked(juce::Button* button)
             int max_val = P1.playlist.size() - 1;
             std::uniform_int_distribution<> distrib(min_val, max_val);
             P1.load_track_from_file(distrib(gen));
-            P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate* speedSlider.getValue());
-            P1.transportSource.start();
-            wave.repaint();
+            if (P1.reader != nullptr && P1.readerSource != nullptr) {
+                P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+                P1.transportSource.start();
+                wave.repaint();
+
+                {
+
+
+
+
+                    const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
+                    TagLib::FileRef f(pathUtf8.c_str());
+
+
+                    if (!f.isNull() && f.tag())
+                    {
+                        P1.meta.clear();
+
+                        TagLib::Tag* t = f.tag();
+
+
+                        if (t->title().length())   P1.meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                        if (t->artist().length())  P1.meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                        if (t->album().length())   P1.meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                        if (t->year())             P1.meta += "Year: " + String((int)t->year()) + "  ";
+                        if (t->comment().length()) P1.meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                        if (t->genre().length())   P1.meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+                    else
+                    {
+                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+
+                    String name = P1.playlist[P1.playlist_index].getFileName();
+
+                    if (name.contains(".wav")) {
+                        P1.meta.clear();
+                    }
+                    
+                    if (P1.reader && P1.meta.isEmpty())
+                    {
+                        P1.meta.clear();
+                        auto& metadata = P1.reader->metadataValues;
+                        
+                        auto keys = metadata.getAllKeys();
+                        auto vals = metadata.getAllValues();
+
+                        
+                        if (vals.size() >= 2)
+                        {
+                            P1.meta += "Name : " + vals[1] + " Artest : " + vals[0];
+                        }
+                        else
+                        {
+                            
+                            P1.meta = "File metadata not fully available.";
+                        }
+                    }
+                    file_data.setText(P1.meta, NotificationType::dontSendNotification);
+
+                }
+
+
+            }
+            else {
+                // Failure (e.g., end of playlist): Cleanly stop the transport
+                P1.transportSource.stop();
+                P1.transportSource.setSource(nullptr);
+                file_data.setText("No next track available or playlist is empty.", juce::dontSendNotification);
+            }
         }
+
+
+        
+
+
+
     }
     if (button == &markes) {
         play_list.setVisible(false);
@@ -561,6 +780,11 @@ void playerGUI::timerCallback() {
         {
             if (!isShuf) {
                 P1.playNextInPlaylist();
+                file_data.setText(P1.meta, NotificationType::dontSendNotification);
+
+                
+
+
             }
             else
             {
@@ -569,7 +793,59 @@ void playerGUI::timerCallback() {
                 int min_val = 0;
                 int max_val = P1.playlist.size() - 1;
                 std::uniform_int_distribution<> distrib(min_val, max_val);
-                P1.load_track_from_file(distrib(gen));
+                P1.playlist_index = distrib(gen);
+                P1.load_track_from_file(P1.playlist_index);
+
+                {
+
+
+
+
+                    const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
+                    TagLib::FileRef f(pathUtf8.c_str());
+
+
+                    if (!f.isNull() && f.tag())
+                    {
+                        P1.meta.clear();
+
+                        TagLib::Tag* t = f.tag();
+
+
+                        if (t->title().length())   P1.meta += "Title: " + String(t->title().toCString(true)) + "  ";
+                        if (t->artist().length())  P1.meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+                        if (t->album().length())   P1.meta += "Album: " + String(t->album().toCString(true)) + "  ";
+                        if (t->year())             P1.meta += "Year: " + String((int)t->year()) + "  ";
+                        if (t->comment().length()) P1.meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+                        if (t->genre().length())   P1.meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+                    else
+                    {
+                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                    }
+
+                    String name = P1.playlist[P1.playlist_index].getFileName();
+
+                    if (name.contains(".wav")) {
+                        P1.meta.clear();
+                    }
+                    if (P1.reader && P1.meta.isEmpty())
+                    {
+                        P1.meta.clear();
+                        auto& metadata = P1.reader->metadataValues;
+                        auto keys = metadata.getAllKeys();
+                        auto vals = metadata.getAllValues();
+
+
+                        P1.meta += "Name : " + vals[1] + " Artest : " + vals[0];
+
+                    }
+                    file_data.setText(P1.meta, NotificationType::dontSendNotification);
+
+                }
+
             }
             if (P1.reader)
             {
@@ -582,31 +858,45 @@ void playerGUI::timerCallback() {
                 wave.repaint();
                 P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
                 P1.transportSource.start();
-                file_data.setText(P1.meta, NotificationType::dontSendNotification);
+                
             }
         }
     }
 
     wasPlayingLastTick = isPlayingNow;
 
-
-
+    
+    
 
 
 }
 
-void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source) {
-    if (source == &P1) {
-        play_list.updateContent();
-        play_list.repaint();
+void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (source == &P1)
+    {
+        
+        if (!P1.playlist.empty() && P1.playlist_index >= 0)
+        {
+            
+            play_list.selectRow(P1.playlist_index);
+            play_list.updateContent();
+            play_list.repaint();
+        }
 
-        wave.repaint();
+        
+        file_data.setText(P1.meta, juce::dontSendNotification);
+
+        
+        positionSlider.setRange(0.0, P1.transportSource.getLengthInSeconds(), 0.01);
     }
 }
 
 void playerGUI::menu_action(int result, playerGUI* gui) {
-
+    if(P1.readerSource== nullptr)
+		return;
     if (result == 1) {
+        
         gui->P1.readerSource->setLooping(true);
         gui->markerLoopEnabled = false;
         gui->P1.looping_on_song = true;
@@ -883,9 +1173,7 @@ int playlistModel::getNumRows() {
 
 void playlistModel::paintListBoxItem(int rowNumber, Graphics& g, int width, int height, bool rowIsSelected)
 {
-    if (rowIsSelected)
-        g.fillAll(juce::Colours::lightblue);
-    else
+    
         g.fillAll(juce::Colours::darkgrey);
 
     if (pPtr == nullptr || rowNumber < 0 || rowNumber >= pPtr->playlist.size())

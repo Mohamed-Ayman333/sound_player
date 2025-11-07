@@ -196,6 +196,8 @@ void playerAudio::make_a_playlist() {
             if (!new_playlist.empty()) {
 
                 playlist = new_playlist;
+                playlist_index = 0;
+                load_track_from_file(0);
 
                 sendChangeMessage();
             }
@@ -276,9 +278,8 @@ void playerAudio::load_track_from_file(int row) {
 
             readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader.get(), false);
 
-            // attach readerSource
-            transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
-            transportSource.start();
+          
+            
 
             thumbnail.clear();
             thumbnail.setSource(new juce::FileInputSource(file));
@@ -307,6 +308,64 @@ void playerAudio::playNextInPlaylist()
     }
 
     load_track_from_file(playlist_index);
+    {
+
+
+
+
+        const std::string pathUtf8 = playlist[playlist_index].getFullPathName().toStdString();
+        TagLib::FileRef f(pathUtf8.c_str());
+
+
+        if (!f.isNull() && f.tag())
+        {
+            meta.clear();
+
+            TagLib::Tag* t = f.tag();
+
+
+            if (t->title().length())   meta += "Title: " + String(t->title().toCString(true)) + "  ";
+            if (t->artist().length())  meta += "Artist: " + String(t->artist().toCString(true)) + "  ";
+            if (t->album().length())   meta += "Album: " + String(t->album().toCString(true)) + "  ";
+            if (t->year())             meta += "Year: " + String((int)t->year()) + "  ";
+            if (t->comment().length()) meta += "Comment: " + String(t->comment().toCString(true)) + "  ";
+            if (t->genre().length())   meta += "Genre: " + String(t->genre().toCString(true)) + "  ";
+            //file_data.setText(meta, NotificationType::dontSendNotification);
+        }
+        else
+        {
+            meta = "No metadata found (try an MP3 with ID3 tags).";
+            //file_data.setText(P1.meta, NotificationType::dontSendNotification);
+        }
+
+        String name = playlist[playlist_index].getFileName();
+
+        if (name.contains(".wav")) {
+            meta.clear();
+        }
+        
+        if (reader && meta.isEmpty())
+        {
+            meta.clear();
+            auto& metadata = reader->metadataValues;
+            
+            auto keys = metadata.getAllKeys();
+            auto vals = metadata.getAllValues();
+
+            
+            if (vals.size() >= 2)
+            {
+                meta += "Name : " + vals[1] + " Artest : " + vals[0];
+            }
+            else
+            {
+                
+                meta = "File metadata not fully available.";
+            }
+        }
+        
+
+    }
 }
 void playerAudio::playPreviasInPlaylist()
 {

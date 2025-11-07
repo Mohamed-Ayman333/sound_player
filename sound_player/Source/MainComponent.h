@@ -11,7 +11,7 @@ class MainComponent : public juce::AudioAppComponent,
 public:
 
     playerGUI g1;
-    playerGUI g2;
+    
     MainComponent();
     ~MainComponent() override;
 
