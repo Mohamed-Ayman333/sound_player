@@ -447,7 +447,7 @@ void playerGUI::buttonClicked(juce::Button* button)
                     }
                     else
                     {
-                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        P1.meta = P1.playlist[P1.playlist_index].getFileName();
                         file_data.setText(P1.meta, NotificationType::dontSendNotification);
                     }
 
@@ -534,7 +534,7 @@ void playerGUI::buttonClicked(juce::Button* button)
                     }
                     else
                     {
-                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        P1.meta = P1.playlist[P1.playlist_index].getFileName();
                         file_data.setText(P1.meta, NotificationType::dontSendNotification);
                     }
 
@@ -618,7 +618,7 @@ void playerGUI::buttonClicked(juce::Button* button)
                     }
                     else
                     {
-                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        P1.meta = P1.playlist[P1.playlist_index].getFileName();
                         file_data.setText(P1.meta, NotificationType::dontSendNotification);
                     }
 
@@ -822,7 +822,7 @@ void playerGUI::timerCallback() {
                     }
                     else
                     {
-                        P1.meta = "No metadata found (try an MP3 with ID3 tags).";
+                        P1.meta = P1.playlist[P1.playlist_index].getFileName();
                         file_data.setText(P1.meta, NotificationType::dontSendNotification);
                     }
 
@@ -889,6 +889,10 @@ void playerGUI::changeListenerCallback(juce::ChangeBroadcaster* source)
 
         
         positionSlider.setRange(0.0, P1.transportSource.getLengthInSeconds(), 0.01);
+
+
+
+
     }
 }
 

@@ -94,7 +94,7 @@ void playerAudio::load_track(std::function<void()> onComplete)
                         }
                         else
                         {
-                            meta = "No metadata found (try an MP3 with ID3 tags).";
+                            meta = file.getFileName();
                         }
 
                         String name = file.getFileName();
@@ -262,7 +262,7 @@ void playerAudio::load_track_from_file(int row) {
                 }
                 else
                 {
-                    meta = "No metadata found (try an MP3 with ID3 tags).";
+                    meta = file.getFileName();
                 }
 
                 String name = file.getFileName();
@@ -278,7 +278,8 @@ void playerAudio::load_track_from_file(int row) {
 
             readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader.get(), false);
 
-          
+            transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
+            transportSource.start();
             
 
             thumbnail.clear();
@@ -334,7 +335,7 @@ void playerAudio::playNextInPlaylist()
         }
         else
         {
-            meta = "No metadata found (try an MP3 with ID3 tags).";
+            meta = playlist[playlist_index].getFileName();
             //file_data.setText(P1.meta, NotificationType::dontSendNotification);
         }
 
