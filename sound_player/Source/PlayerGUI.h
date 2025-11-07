@@ -12,7 +12,7 @@ class playlistModel :public ListBoxModel {
 
 public:
 	playerAudio* pPtr;
-	std::vector<String> items;
+	
 	playerGUI* guiptr;
 
 	playlistModel(playerAudio* P1, playerGUI* gui);
@@ -26,7 +26,7 @@ class marklistModel :public ListBoxModel {
 
 public:
 	playerAudio* pPtr;
-	//std::vector<marker> items;
+	
 	playerGUI* guiptr;
 
 	marklistModel(playerAudio* P1, playerGUI* gui);

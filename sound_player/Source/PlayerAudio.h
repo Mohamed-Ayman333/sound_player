@@ -31,6 +31,7 @@ public:
     std::vector<File>playlist;
     int playlist_index = 0;
     bool loopPlaylist = false;
+    bool looping_on_song = false;
 
 
 

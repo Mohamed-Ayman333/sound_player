@@ -17,12 +17,28 @@ void playerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
 
+// PlayerAudio.cpp
+
 void playerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     transportSource.getNextAudioBlock(bufferToFill);
 
-}
+    
+    if (readerSource != nullptr && !looping_on_song)
+    {
+        double trackLength = transportSource.getLengthInSeconds();
+        double currentPosition = transportSource.getCurrentPosition();
 
+        
+        if (trackLength > 0.0 && currentPosition >= trackLength - 0.1)
+        {
+            
+            playNextInPlaylist();
+
+            
+        }
+    }
+}
 void playerAudio::releaseResources()
 {
     transportSource.releaseResources();
@@ -282,8 +298,12 @@ void playerAudio::playNextInPlaylist()
     {
         if (loopPlaylist)
             playlist_index = 0;
-        else
+        else {
+            
+
             return;
+        }
+        
     }
 
     load_track_from_file(playlist_index);
@@ -313,3 +333,4 @@ void playerAudio::speed(Slider* slider) {
 
     }
 }
+

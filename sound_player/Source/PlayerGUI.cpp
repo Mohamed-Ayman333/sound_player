@@ -140,6 +140,7 @@ playerGUI::playerGUI() {
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
     volumeSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+	volumeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     addAndMakeVisible(volumeSlider);
 
     speedSlider.setRange(0.1, 4, 0.1);
@@ -185,7 +186,7 @@ playerGUI::playerGUI() {
 
 
     P1.addChangeListener(this);
-    startTimer(1000 / 30);
+    startTimer(50);
 }
 //button Size And Location
 void playerGUI::resized()
@@ -381,8 +382,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 
         P1.make_a_playlist();
 
-        for (auto& item : P1.playlist)
-            playlist_model.items.push_back(item.getFileName());
+        
 
         play_list.updateContent();
 
@@ -391,8 +391,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 
         P1.add_to_playlist();
 
-        for (auto& item : P1.playlist)
-            playlist_model.items.push_back(item.getFileName());
+        
 
         play_list.updateContent();
 
@@ -492,11 +491,31 @@ void playerGUI::timerCallback() {
     double currentPos = P1.transportSource.getCurrentPosition();
     double totalLen = P1.transportSource.getLengthInSeconds();
 
+    if (!markerLoopEnabled)
+        return;
+    else {
+        const double pos = P1.transportSource.getCurrentPosition();
+        const double loopStart = wave.looping_marker[0].position;
+        const double loopEnd = wave.looping_marker[1].position;
+
+        const double eps = 1e-6;
+        if (loopEnd > loopStart + eps && pos >= loopEnd - eps)
+        {
+            P1.transportSource.setPosition(loopStart);
+            P1.transportSource.start();
+        }
+        if (loopEnd > loopStart + eps && pos <= loopStart - eps)
+        {
+            P1.transportSource.setPosition(loopStart);
+            P1.transportSource.start();
+        }
+    }
     if (wasPlayingLastTick && !isPlayingNow && totalLen > 0.0)
     {
 
         if (currentPos < 0.2 || currentPos >= totalLen - 0.2)
         {
+           
             P1.playNextInPlaylist();
 
             if (P1.reader)
@@ -517,24 +536,6 @@ void playerGUI::timerCallback() {
 
     wasPlayingLastTick = isPlayingNow;
 
-    if (!markerLoopEnabled)
-        return;
-
-    const double pos = P1.transportSource.getCurrentPosition();
-    const double loopStart = wave.looping_marker[0].position;
-    const double loopEnd = wave.looping_marker[1].position;
-
-    const double eps = 1e-6;
-    if (loopEnd > loopStart + eps && pos >= loopEnd - eps)
-    {
-        P1.transportSource.setPosition(loopStart);
-        P1.transportSource.start();
-    }
-    if (loopEnd > loopStart + eps && pos <= loopStart - eps)
-    {
-        P1.transportSource.setPosition(loopStart);
-        P1.transportSource.start();
-    }
 
 
 
@@ -555,23 +556,28 @@ void playerGUI::menu_action(int result, playerGUI* gui) {
     if (result == 1) {
         gui->P1.readerSource->setLooping(true);
         gui->markerLoopEnabled = false;
+        gui->P1.looping_on_song = true;
         wave.repaint();
 
     }
     if (result == 2) {
         gui->P1.readerSource->setLooping(false);
         gui->markerLoopEnabled = true;
+        gui->P1.looping_on_song = false;
         wave.repaint();
 
     }
     if (result == 3) {
         gui->P1.loopPlaylist = true;
-
+        gui->P1.readerSource->setLooping(false);
+        gui->markerLoopEnabled = false;
+        gui->P1.looping_on_song = false;
     }
     if (result == 4) {
         gui->P1.readerSource->setLooping(false);
         gui->markerLoopEnabled = false;
         gui->P1.loopPlaylist = false;
+        gui->P1.looping_on_song = false;
         wave.repaint();
     }
 }
@@ -881,31 +887,14 @@ void playlistModel::listBoxItemClicked(int row, const MouseEvent& e) {
         }
     }
     if (e.mods.isRightButtonDown()) {
-        PopupMenu menu;
-        menu.addSeparator();
-        menu.addItem(1, "play from here");
-        menu.addItem(2, "Delete item");
-        menu.showMenuAsync(juce::PopupMenu::Options(),
-            [this, row](int result)
-            {
-                this->menu_action(result, row);
-            });
+        if (row < 0 || row >= static_cast<int>(pPtr->playlist.size())) return;
+
+        pPtr->playlist.erase(pPtr->playlist.begin() + row);
+		guiptr->play_list.updateContent();
     }
 }
 
-void playlistModel::menu_action(int option, int row)
-{
-    auto it = items.begin();
-    std::advance(it, row);
-    if (option == 1)
-    {
 
-    }
-    if (option == 2)
-    {
-        items.erase(it);
-    }
-}
 
 marklistModel::marklistModel(playerAudio* P1, playerGUI* gui) {
 	pPtr = P1;
@@ -1003,6 +992,7 @@ void marklistModel::menu_action(int option, int row)
             guiptr->wave.removeChildComponent(guiptr->wave.markers[row].get());
             guiptr->wave.markers.erase(guiptr->wave.markers.begin() + row);
             guiptr->wave.repaint();
+			guiptr->mark_list.updateContent();
         }
 	}
 }
