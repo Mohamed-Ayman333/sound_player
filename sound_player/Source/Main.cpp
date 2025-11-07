@@ -1,3 +1,8 @@
+//the repo: https://github.com/Mohamed-Ayman333/sound_player
+//the video: https://youtu.be/6VlrYpHnt9M
+
+
+
 #include <JuceHeader.h>
 #include "MainComponent.h"
 #include "PlayerAudio.h"
