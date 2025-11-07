@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <random>
 
 
 using namespace juce;
@@ -132,6 +133,15 @@ playerGUI::playerGUI() {
         ImageCache::getFromMemory(BinaryData::marks_png, BinaryData::marks_pngSize), 1.0f, Colours::transparentBlack);
     addAndMakeVisible(markes);
 
+    shuf.addListener(this);
+    pauseAndPlay.setToggleable(true);
+    pauseAndPlay.setClickingTogglesState(true);
+    shuf.setImages(false, true, true,
+        ImageCache::getFromMemory(BinaryData::ns_png, BinaryData::ns_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::ns_png, BinaryData::ns_pngSize), 1.0f, Colours::transparentBlack,
+        ImageCache::getFromMemory(BinaryData::ns_png, BinaryData::ns_pngSize), 1.0f, Colours::transparentBlack);
+    addAndMakeVisible(shuf);
+
 
 
     // sliders
@@ -199,6 +209,7 @@ void playerGUI::resized()
     goToStart.setBounds(180, 60, 60, 40);
     pauseAndPlay.setBounds(260, 60, 60, 40);
     goToEnd.setBounds(340, 60, 60, 40);
+    shuf.setBounds(420, 60, 60, 40);
 
     //r2
     mute.setBounds(20, 260, 60, 40);
@@ -410,19 +421,52 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &next) {
 
-        wave.looping_marker[0].position = 0.0;
-        wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
-        markerLoopEnabled = false;
-        wave.markers.clear();
-        P1.playNextInPlaylist();
-        P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate* speedSlider.getValue());
-        P1.transportSource.start();
-        wave.repaint();
-
+        if (!isShuf) {
+            wave.looping_marker[0].position = 0.0;
+            wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
+            markerLoopEnabled = false;
+            wave.markers.clear();
+            P1.playNextInPlaylist();
+            P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate * speedSlider.getValue());
+            P1.transportSource.start();
+            wave.repaint();
+        }
+        else
+        {
+            wave.looping_marker[0].position = 0.0;
+            wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
+            markerLoopEnabled = false;
+            wave.markers.clear();
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            int min_val = 0;
+            int max_val = P1.playlist.size() - 1;
+            std::uniform_int_distribution<> distrib(min_val, max_val);
+            P1.load_track_from_file(distrib(gen));
+            P1.transportSource.setSource(P1.readerSource.get(), 0, nullptr, P1.reader->sampleRate* speedSlider.getValue());
+            P1.transportSource.start();
+            wave.repaint();
+        }
     }
     if (button == &markes) {
         play_list.setVisible(false);
 		mark_list.setVisible(!mark_list.isVisible());
+	}
+    if(button == &shuf) {
+		isShuf = !isShuf;
+        if (isShuf) {
+            shuf.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::s_png, BinaryData::s_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::s_png, BinaryData::s_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::s_png, BinaryData::s_pngSize), 1.0f, Colours::transparentBlack);
+        }
+        else {
+            shuf.setImages(false, true, true,
+                ImageCache::getFromMemory(BinaryData::ns_png, BinaryData::ns_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::ns_png, BinaryData::ns_pngSize), 1.0f, Colours::transparentBlack,
+                ImageCache::getFromMemory(BinaryData::ns_png, BinaryData::ns_pngSize), 1.0f, Colours::transparentBlack);
+        }
+        
 	}
 
 }
@@ -515,9 +559,18 @@ void playerGUI::timerCallback() {
 
         if (currentPos < 0.2 || currentPos >= totalLen - 0.2)
         {
-           
-            P1.playNextInPlaylist();
-
+            if (!isShuf) {
+                P1.playNextInPlaylist();
+            }
+            else
+            {
+                std::random_device rd;
+                std::mt19937 gen(rd());
+                int min_val = 0;
+                int max_val = P1.playlist.size() - 1;
+                std::uniform_int_distribution<> distrib(min_val, max_val);
+                P1.load_track_from_file(distrib(gen));
+            }
             if (P1.reader)
             {
                 const double len = P1.transportSource.getLengthInSeconds();
@@ -893,8 +946,6 @@ void playlistModel::listBoxItemClicked(int row, const MouseEvent& e) {
 		guiptr->play_list.updateContent();
     }
 }
-
-
 
 marklistModel::marklistModel(playerAudio* P1, playerGUI* gui) {
 	pPtr = P1;

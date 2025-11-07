@@ -83,22 +83,23 @@ public:
 	Slider speedSlider;
 
 
-	ImageButton loadButton{ "Load Files" };
-	ImageButton restartButton{ "Restart" };
-	ImageButton stopButton{ "Stop" };
-	ImageButton mute{ "mute" };
-	ImageButton pauseAndPlay{ "pauseAndPlay" };
-	ImageButton goToStart{ "go to start" };
-	ImageButton goToEnd{ "go to end" };
-	ImageButton loop{ "loop" };
-	ImageButton forward{ "10s forward" };
-	ImageButton backward{ "10s backward" };
-	ImageButton playlists{ "playlists" };
-	ImageButton make_a_playlist{ "make a playlist" };
-	ImageButton add_to_playlist{ "add to playlist" };
-	ImageButton next{ "next track" };
-	ImageButton back{ "last track" };
+	ImageButton loadButton;
+	ImageButton restartButton;
+	ImageButton stopButton;
+	ImageButton mute;
+	ImageButton pauseAndPlay;
+	ImageButton goToStart;
+	ImageButton goToEnd;
+	ImageButton loop;
+	ImageButton forward;
+	ImageButton backward;
+	ImageButton playlists;
+	ImageButton make_a_playlist;
+	ImageButton add_to_playlist;
+	ImageButton next;
+	ImageButton back;
 	ImageButton markes;
+	ImageButton shuf;
 
 	playlistModel playlist_model{ &P1,this };
 	ListBox play_list;
@@ -119,6 +120,7 @@ public:
 	marker* posetion_marke_ptr = &wave.posetion_marke;
 	bool markerLoopEnabled{ false };
 	bool wasPlayingLastTick = false;
+	bool isShuf = false;
 
 
 	playerGUI();
