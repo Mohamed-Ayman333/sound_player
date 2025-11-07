@@ -36,7 +36,7 @@ public:
     void initialise(const String&) override
     {
         
-        mainWindow = std::make_unique<MainWindow>("7maza");
+        mainWindow = std::make_unique<MainWindow>("7maza Audio Player");
     }
 
     // Clean up

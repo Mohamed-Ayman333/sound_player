@@ -265,6 +265,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 {
     if (button == &loadButton)
     {
+		isInPlaylist = false;
         P1.load_track([this] {
             wave.repaint();
 
@@ -396,7 +397,7 @@ void playerGUI::buttonClicked(juce::Button* button)
         P1.make_a_playlist();
 
         play_list.updateContent();
-
+		isInPlaylist = true;
     }
     if (button == &add_to_playlist) {
 
@@ -409,6 +410,7 @@ void playerGUI::buttonClicked(juce::Button* button)
     }
     if (button == &back) {
         
+        if (!isInPlaylist) return;
             wave.looping_marker[0].position = 0.0;
             wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
             markerLoopEnabled = false;
@@ -425,7 +427,8 @@ void playerGUI::buttonClicked(juce::Button* button)
 
 
 
-
+					if (P1.playlist_index < 0) P1.playlist_index = 0;
+					
                     const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
                     TagLib::FileRef f(pathUtf8.c_str());
 
@@ -494,7 +497,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 
     }
     if (button == &next) {
-
+        if (!isInPlaylist) return;
         if (!isShuf) {
             wave.looping_marker[0].position = 0.0;
             wave.looping_marker[1].position = wave.pPtr->transportSource.getLengthInSeconds();
@@ -512,7 +515,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 
 
 
-
+                    if (P1.playlist_index >= P1.playlist.size()) P1.playlist_index = P1.playlist.size() - 1;
                     const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
                     TagLib::FileRef f(pathUtf8.c_str());
 
@@ -596,7 +599,7 @@ void playerGUI::buttonClicked(juce::Button* button)
 
 
 
-
+                    if (P1.playlist_index >= P1.playlist.size()) P1.playlist_index = P1.playlist.size() - 1;
                     const std::string pathUtf8 = P1.playlist[P1.playlist_index].getFullPathName().toStdString();
                     TagLib::FileRef f(pathUtf8.c_str());
 
@@ -1228,6 +1231,7 @@ void playlistModel::listBoxItemClicked(int row, const MouseEvent& e) {
             guiptr->file_data.setText(pPtr->meta, NotificationType::dontSendNotification);
             pPtr->transportSource.setSource(pPtr->readerSource.get(), 0, nullptr, pPtr->reader->sampleRate * guiptr->speedSlider.getValue());
             pPtr->transportSource.start();
+			guiptr->isInPlaylist = true;
             guiptr->file_data.repaint();
         }
     }
@@ -1236,6 +1240,7 @@ void playlistModel::listBoxItemClicked(int row, const MouseEvent& e) {
 
         pPtr->playlist.erase(pPtr->playlist.begin() + row);
 		guiptr->play_list.updateContent();
+		if (pPtr->playlist.empty())guiptr->isInPlaylist = false;
     }
 }
 

@@ -121,6 +121,7 @@ public:
 	bool markerLoopEnabled{ false };
 	bool wasPlayingLastTick = false;
 	bool isShuf = false;
+	bool isInPlaylist = false;
 
 
 	playerGUI();
